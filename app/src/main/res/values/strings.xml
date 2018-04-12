@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TODO</string>
+    <string name="save_schedule">Save Schedule</string>
+    <string name="load_schedule">Load Schedule</string>
+    <string name="delete">del</string>
+    <string name="title_activity_test">TestActivity</string>
+</resources>
