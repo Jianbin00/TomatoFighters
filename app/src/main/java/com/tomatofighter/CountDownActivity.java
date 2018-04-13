@@ -2,10 +2,8 @@ package com.tomatofighter;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.Toolbar;
 
 
@@ -40,7 +38,7 @@ public class CountDownActivity extends Activity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_count_down, menu);
+        getMenuInflater().inflate(R.menu.menu_play_list, menu);
         return true;
     }
 
@@ -53,7 +51,7 @@ public class CountDownActivity extends Activity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.save_schedule)
+        /*if (id == R.id.save_schedule)
         {
 
             return true;
@@ -61,7 +59,7 @@ public class CountDownActivity extends Activity
         else if(id ==R.id.load_schedule)
         {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

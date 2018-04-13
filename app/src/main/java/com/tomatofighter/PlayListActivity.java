@@ -1,8 +1,12 @@
 package com.tomatofighter;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -22,7 +26,6 @@ This is the launcher activity.
  */
 public class PlayListActivity extends AppCompatActivity
 {
-    private static final String TAG = "zxt";
     private ListView mLv;
     private List<TaskItem> mDatas;
 
@@ -47,7 +50,8 @@ public class PlayListActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v)
                     {
-                        Toast.makeText(PlayListActivity.this, "position:" + position, Toast.LENGTH_SHORT).show();
+                        Intent i=new Intent(PlayListActivity.this,TodoEditorActivity.class);
+                        startActivity(i);
                     }
                 });
 
@@ -67,10 +71,28 @@ public class PlayListActivity extends AppCompatActivity
         });
     }
 
-    //TODO:The fuction for add a new task.
-    public void addTask(View v)
-    {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_play_list, menu);
+        return true;
+    }
 
+    //TODO:The fuction for add a new task.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_add)
+        {
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
