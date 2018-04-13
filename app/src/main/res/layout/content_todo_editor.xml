@@ -7,6 +7,11 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.tomatofighter.TodoEditorActivity"
-    tools:showIn="@layout/activity_todo_editor">
+    tools:showIn="@layout/activity_todo_editor" >
+
+    <ListView
+        android:id="@+id/tasks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </android.support.constraint.ConstraintLayout>
