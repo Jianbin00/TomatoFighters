@@ -30,6 +30,7 @@ public class PlayListActivity extends AppCompatActivity
     private ListView mLv;
     private List<TaskItem> mDatas;
     private Toolbar toolbar;
+    private Intent i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,7 +55,7 @@ public class PlayListActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v)
                     {
-                        Intent i=new Intent(PlayListActivity.this,TodoEditorActivity.class);
+                        i=new Intent(PlayListActivity.this,TodoEditorActivity.class);
                         startActivity(i);
                     }
                 });
@@ -93,7 +94,8 @@ public class PlayListActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add)
         {
-
+            i=new Intent(PlayListActivity.this,TodoEditorActivity.class);
+            startActivity(i);
             return true;
         }
         return super.onOptionsItemSelected(item);
