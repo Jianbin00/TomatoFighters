@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ProgressBarTheme" parent="@android:style/Widget.Material.ProgressBar.Large">
+        <item name="android:indeterminateOnly">true</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay"/>
 
     <style name="AppTheme.PopupOverlay"/>

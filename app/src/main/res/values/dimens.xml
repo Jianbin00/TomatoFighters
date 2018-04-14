@@ -1,4 +1,6 @@
 <resources>
     <dimen name="toolbarSize">60dp</dimen>
     <dimen name="fab_margin">60dp</dimen>
+    <dimen name="play_button_size">50dp</dimen>
+    <dimen name="space_between_buttons">60dp</dimen>
 </resources>

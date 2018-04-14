@@ -5,40 +5,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tomatofighter.CountDownActivity">
+    tools:context="com.tomatofighter.TimerActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbarSize"
             android:background="@color/colorPrimary"
-            android:popupTheme="@style/AppTheme.PopupOverlay"
             />
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <!--<include
-            layout="@layout/content_timer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
 
         <include
-            layout="@layout/content_list"
+            layout="@layout/content_list_timer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>-->
-    </LinearLayout>
+            android:layout_height="match_parent"/>
+
 
 
 </android.support.design.widget.CoordinatorLayout>
