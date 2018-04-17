@@ -7,8 +7,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 
+import com.bigkoo.pickerview.OptionsPickerView;
 import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
 import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
@@ -21,6 +23,10 @@ public class TodoEditorActivity extends AppCompatActivity
     private ListView mLv;
     private List<TaskItem> mDatas;
     private Toolbar toolbar;
+    private OptionsPickerView tpview;
+    private ArrayList<Short> hourList;
+    private ArrayList<Short> minAndSecList;
+    private final short MAX_HOUR=99;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -35,6 +41,7 @@ public class TodoEditorActivity extends AppCompatActivity
         mLv = findViewById(R.id.tasks);
 
         initDatas();
+        initOptions();
         mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_time_setter)
         {
             @Override
@@ -43,7 +50,27 @@ public class TodoEditorActivity extends AppCompatActivity
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
                 holder.setText(R.id.content, taskItem.name);
                 //TODO:Set the listener.
+                holder.setOnClickListener(R.id.time_setter, new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        tpview=new OptionsPickerView.Builder(TodoEditorActivity.this,new OptionsPickerView.OnOptionsSelectListener()
+                        {
+                            @Override
+                            public void onOptionsSelect(int option1,int option2,int option3,View v)
+                            {
+                                ((EditText)v).setText(option1+":"+option2+":"+option3);
 
+                            }
+                        })
+                                .setTitleText(getResources().getString(R.string.select_time))
+                                .setLabels("Hour","Min","Sec")
+                                .build();
+                        tpview.setPicker(hourList,minAndSecList,minAndSecList);
+
+                    }
+                });
                 holder.setOnClickListener(R.id.btnDelete, new View.OnClickListener()
                 {
                     @Override
@@ -90,6 +117,19 @@ public class TodoEditorActivity extends AppCompatActivity
         for (int i = 0; i < 5; i++) {
             mDatas.add(new TaskItem("" + i));
         }
+    }
+
+    private void initOptions()
+    {
+        for(short i=0;i<=MAX_HOUR;i++)
+        {
+            hourList.add(i);
+        }
+        for(short i=0;i<60;i++)
+        {
+            minAndSecList.add(i);
+        }
+
     }
 
 }

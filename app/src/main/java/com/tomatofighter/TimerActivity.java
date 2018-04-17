@@ -1,14 +1,12 @@
 package com.tomatofighter;
 
 import android.support.v7.app.AppCompatActivity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
@@ -30,6 +28,8 @@ public class TimerActivity extends AppCompatActivity
     private List<TaskItem> mDatas;
     private Toolbar toolbar;
     private TextView timer;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -44,14 +44,16 @@ public class TimerActivity extends AppCompatActivity
         mLv = findViewById(R.id.tasks);
         timer=findViewById(R.id.remain_time);
         initDatas();
+
         mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_for_timer)
         {
             @Override
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
             {
-                //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
+                //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉it效果
                 holder.setText(R.id.content, taskItem.name);
                 //TODO:Set the listener.
+
 
                 holder.setOnClickListener(R.id.btnDelete, new View.OnClickListener()
                 {
@@ -98,5 +100,8 @@ public class TimerActivity extends AppCompatActivity
             mDatas.add(new TaskItem("" + i));
         }
     }
+
+
+
 
 }

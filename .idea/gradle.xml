@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/swipemenulib" />
             <option value="$PROJECT_DIR$/swipetest" />
+            <option value="$PROJECT_DIR$/timer" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

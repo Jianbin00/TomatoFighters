@@ -35,7 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:inputType="time"/>
+            android:inputType="time"
+            android:text="@string/default_time"/>
 
     </android.support.v7.widget.LinearLayoutCompat>
 
