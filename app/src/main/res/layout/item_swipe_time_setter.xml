@@ -18,10 +18,10 @@
         >
 
         <EditText
-            android:id="@+id/content"
+            android:id="@+id/activity"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-
+            android:lines="1"
             android:layout_weight="15"
             android:gravity="left"/>
 
@@ -35,8 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:inputType="time"
-            android:text="@string/default_time"/>
+            android:text="@string/default_time"
+            android:focusable="false"/>
 
     </android.support.v7.widget.LinearLayoutCompat>
 

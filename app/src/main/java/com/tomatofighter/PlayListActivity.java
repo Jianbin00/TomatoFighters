@@ -27,7 +27,7 @@ This is the launcher activity.
 public class PlayListActivity extends AppCompatActivity
 {
     private ListView mLv;
-    private List<TaskItem> mDatas;
+    private List<TodoList> mDatas;
     private Toolbar toolbar;
     private Intent i;
 
@@ -41,15 +41,15 @@ public class PlayListActivity extends AppCompatActivity
         mLv = findViewById(R.id.tasks);
 
         initDatas();
-        mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe)
+        mLv.setAdapter(new CommonAdapter<TodoList>(this, mDatas, R.layout.item_swipe)
         {
             @Override
-            public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
+            public void convert(final ViewHolder holder, TodoList tdlist, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
-                holder.setText(R.id.content, taskItem.name);
+                holder.setText(R.id.activity, tdlist.getName());
                 //TODO:Set the listener.
-                holder.setOnClickListener(R.id.content, new View.OnClickListener()
+                holder.setOnClickListener(R.id.activity, new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
@@ -104,8 +104,8 @@ public class PlayListActivity extends AppCompatActivity
     //TODO:Implement the loading method.
     private void initDatas() {
         mDatas = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            mDatas.add(new TaskItem("" + i));
+        for (int i = 0; i < 5; i++) {
+            mDatas.add(new TodoList("" + i));
         }
     }
 }

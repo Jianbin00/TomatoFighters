@@ -9,29 +9,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PlayListActivity"
+        <!--<activity android:name=".PlayListActivity"
                   android:label="PlayListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
+        </activity>-->
         <activity
             android:name=".TodoEditorActivity"
             android:label="@string/title_activity_todo_editor"
             android:parentActivityName="PlayListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tomatofighter.PlayListActivity" />
         </activity>
-        <activity android:name=".TimerActivity"
+        <!--<activity android:name=".TimerActivity"
                   android:label="TimerActivity"
                   android:parentActivityName="TodoEditorActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tomatofighter.TodoEditorActivity" />
-        </activity>
+        </activity>-->
     </application>
 
 </manifest>

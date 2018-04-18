@@ -51,7 +51,7 @@ public class TimerActivity extends AppCompatActivity
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉it效果
-                holder.setText(R.id.content, taskItem.name);
+                holder.setText(R.id.activity, taskItem.name);
                 //TODO:Set the listener.
 
 

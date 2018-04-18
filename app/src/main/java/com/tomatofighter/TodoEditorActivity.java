@@ -1,16 +1,22 @@
 package com.tomatofighter;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
+import com.bigkoo.pickerview.listener.CustomListener;
 import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
 import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
@@ -48,10 +54,11 @@ public class TodoEditorActivity extends AppCompatActivity
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
-                holder.setText(R.id.content, taskItem.name);
+                holder.setText(R.id.activity, taskItem.name);
                 //TODO:Set the listener.
                 holder.setOnClickListener(R.id.time_setter, new View.OnClickListener()
                 {
+                    String msg;
                     @Override
                     public void onClick(View view)
                     {
@@ -60,16 +67,51 @@ public class TodoEditorActivity extends AppCompatActivity
                             @Override
                             public void onOptionsSelect(int option1,int option2,int option3,View v)
                             {
-                                ((EditText)v).setText(option1+":"+option2+":"+option3);
 
+                                msg=option1+":"+option2+":"+option3;
+                                Toast.makeText(TodoEditorActivity.this, msg, Toast.LENGTH_SHORT).show();
                             }
                         })
+                                .setLayoutRes(R.layout.pickerview_custom_options, new CustomListener()
+                                {
+                                    @Override
+                                    public void customLayout(View v)
+                                    {
+                                        TextView tvSubmit = v.findViewById(R.id.tv_finish);
+                                        TextView tvCancel = v.findViewById(R.id.iv_cancel);
+                                        tvSubmit.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                tpview.returnData();
+                                            }
+                                        });
+                                        tvCancel.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                tpview.dismiss();
+                                            }
+                                        });
+
+                                    }
+                                })
                                 .setTitleText(getResources().getString(R.string.select_time))
                                 .setLabels("Hour","Min","Sec")
+                                .setSelectOptions(1,1,1)
+                                .setContentTextSize(50)
+                                .setDividerColor(Color.TRANSPARENT)
+                                .setBgColor(Color.BLACK)
+                                .setTitleBgColor(Color.DKGRAY)
+                                .setTitleColor(Color.LTGRAY)
+                                .setCancelColor(Color.YELLOW)
+                                .setSubmitColor(Color.YELLOW)
+                                .setTextColorCenter(Color.LTGRAY)
+                                .isDialog(true)
                                 .build();
-                        tpview.setPicker(hourList,minAndSecList,minAndSecList);
-
+                        tpview.setNPicker(hourList,minAndSecList,minAndSecList);
+                        tpview.show();
                     }
+
+
                 });
                 holder.setOnClickListener(R.id.btnDelete, new View.OnClickListener()
                 {
@@ -83,6 +125,7 @@ public class TodoEditorActivity extends AppCompatActivity
                 });
             }
         });
+        
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -121,6 +164,8 @@ public class TodoEditorActivity extends AppCompatActivity
 
     private void initOptions()
     {
+        hourList=new ArrayList<>();
+        minAndSecList=new ArrayList<>();
         for(short i=0;i<=MAX_HOUR;i++)
         {
             hourList.add(i);
