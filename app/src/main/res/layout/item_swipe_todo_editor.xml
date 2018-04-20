@@ -14,16 +14,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?android:attr/selectableItemBackground"
-        android:orientation="horizontal"
-        >
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/activity"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="@dimen/todo_editor_text_width"
+            android:layout_height="@dimen/todo_editor_text_height"
             android:layout_weight="15"
-            android:gravity="left"
-            android:lines="1"/>
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="left|center_vertical"
+            android:maxLines="1"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -32,11 +36,12 @@
 
         <EditText
             android:id="@+id/time_setter"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="@dimen/todo_editor_time_width"
+            android:layout_height="@dimen/todo_editor_text_height"
             android:layout_weight="4"
             android:focusable="false"
-            android:text="@string/default_time"/>
+            android:text="@string/default_time"
+            android:textAlignment="center"/>
 
     </android.support.v7.widget.LinearLayoutCompat>
 

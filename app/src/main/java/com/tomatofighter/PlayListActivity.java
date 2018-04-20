@@ -1,6 +1,7 @@
 package com.tomatofighter;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,12 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
-import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
 import java.util.ArrayList;
@@ -73,6 +74,9 @@ public class PlayListActivity extends AppCompatActivity
                     public boolean onDoubleTap(MotionEvent e)
                     {
                         final EditText inputText = new EditText(PlayListActivity.this);
+                        inputText.setMaxLines(1);
+                        inputText.setSingleLine(true);
+
                         final AlertDialog.Builder inputDialog = new AlertDialog.Builder(PlayListActivity.this);
                         inputDialog.setTitle(R.string.rename)
                                 .setView(inputText)
@@ -93,7 +97,16 @@ public class PlayListActivity extends AppCompatActivity
                                         dialogInterface.dismiss();
                                     }
                                 });
+                        inputText.setImeOptions(EditorInfo.IME_ACTION_DONE);
                         inputDialog.show();
+                        inputText.setText(tdlist.getName());
+                        inputText.selectAll();
+                        InputMethodManager inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (inputManager != null)
+                        {
+                            inputManager.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT);
+                        }
+
 
                         return super.onDoubleTap(e);
                     }

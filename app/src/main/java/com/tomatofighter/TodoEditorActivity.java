@@ -1,21 +1,21 @@
 package com.tomatofighter;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.bigkoo.pickerview.listener.CustomListener;
-import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
-import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
 import java.util.ArrayList;
@@ -50,12 +50,50 @@ public class TodoEditorActivity extends AppCompatActivity
         mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_todo_editor)
         {
             @Override
-            public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
+            public void convert(final ViewHolder holder, final TaskItem taskItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
                 holder.setText(R.id.activity, taskItem.getName());
                 holder.setText(R.id.time_setter, taskItem.getTime());
-                //TODO:Set the listener.
+                //TODO:Set the listener
+                holder.setOnClickListener(R.id.activity, new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        final EditText inputText = new EditText(TodoEditorActivity.this);
+
+                        inputText.setText(taskItem.getName());
+                        inputText.setMaxLines(1);
+                        inputText.selectAll();
+                        final AlertDialog.Builder inputDialog = new AlertDialog.Builder(TodoEditorActivity.this);
+                        inputDialog.setTitle(R.string.rename)
+                                .setView(inputText)
+                                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                        String newName = inputText.getText().toString();
+                                        taskItem.setName(newName);
+                                        dialogInterface.dismiss();
+                                        notifyDataSetChanged();
+                                    }
+                                })
+                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+                        inputDialog.show();
+
+                    }
+                });
+
+
                 holder.setOnClickListener(R.id.time_setter, new View.OnClickListener()
                 {
                     String msg;
@@ -68,8 +106,9 @@ public class TodoEditorActivity extends AppCompatActivity
                             public void onOptionsSelect(int option1,int option2,int option3,View v)
                             {
 
-                                msg=option1+":"+option2+":"+option3;
-                                Toast.makeText(TodoEditorActivity.this, msg, Toast.LENGTH_SHORT).show();
+                                msg = String.format("%02d", option1) + ":" + String.format("%02d", option2) + ":" + String.format("%02d", option3);
+                                taskItem.setTime(msg);
+                                notifyDataSetChanged();
                             }
                         })
                                 .setLayoutRes(R.layout.pickerview_custom_options, new CustomListener()
@@ -99,12 +138,12 @@ public class TodoEditorActivity extends AppCompatActivity
                                 .setSelectOptions(0, 0, 0)
                                 .setContentTextSize(50)
                                 .setDividerColor(Color.TRANSPARENT)
-                                .setBgColor(Color.BLACK)
+                                .setBgColor(Color.WHITE)
                                 .setTitleBgColor(Color.DKGRAY)
                                 .setTitleColor(Color.LTGRAY)
                                 .setCancelColor(Color.YELLOW)
                                 .setSubmitColor(Color.YELLOW)
-                                .setTextColorCenter(Color.LTGRAY)
+                                .setTextColorCenter(Color.BLACK)
                                 .setCyclic(true, true, true)
                                 .isDialog(true)
                                 .build();
