@@ -6,7 +6,7 @@
     android:layout_height="100dp"
     android:clickable="true"
     android:paddingBottom="1dp"
-    app:ios="true"
+    app:ios="false"
     app:leftSwipe="true"
     app:swipeEnable="true">
 

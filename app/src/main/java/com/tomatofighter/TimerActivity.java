@@ -1,12 +1,12 @@
 package com.tomatofighter;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
@@ -45,7 +45,7 @@ public class TimerActivity extends AppCompatActivity
         timer=findViewById(R.id.remain_time);
         initDatas();
 
-        mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_for_timer)
+        mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_timer)
         {
             @Override
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)

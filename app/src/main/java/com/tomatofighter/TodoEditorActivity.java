@@ -4,13 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +23,15 @@ import java.util.List;
 
 public class TodoEditorActivity extends AppCompatActivity
 {
+    private final short MAX_HOUR = 99;
     private ListView mLv;
+    private TodoList todoList;
     private List<TaskItem> mDatas;
     private Toolbar toolbar;
     private OptionsPickerView tpview;
     private ArrayList<Short> hourList;
     private ArrayList<Short> minAndSecList;
-    private final short MAX_HOUR=99;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -48,13 +47,14 @@ public class TodoEditorActivity extends AppCompatActivity
 
         initDatas();
         initOptions();
-        mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_time_setter)
+        mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_todo_editor)
         {
             @Override
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
                 holder.setText(R.id.activity, taskItem.name);
+                holder.setText(R.id.time_setter, taskItem.time);
                 //TODO:Set the listener.
                 holder.setOnClickListener(R.id.time_setter, new View.OnClickListener()
                 {
@@ -156,10 +156,14 @@ public class TodoEditorActivity extends AppCompatActivity
     }
     //TODO:Implement the loading method.
     private void initDatas() {
-        mDatas = new ArrayList<>();
+        /*mDatas = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             mDatas.add(new TaskItem("" + i));
-        }
+        }*/
+
+        todoList = getIntent().getParcelableExtra("todolist");
+        setTitle(todoList.getName());
+        mDatas = todoList.getTasks();
     }
 
     private void initOptions()
