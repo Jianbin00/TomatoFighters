@@ -26,13 +26,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tomatofighter.PlayListActivity" />
         </activity>
-        <!--<activity android:name=".TimerActivity"
-                  android:label="TimerActivity"
-                  android:parentActivityName="TodoEditorActivity">
+        <activity
+            android:name=".TimerActivity"
+            android:label="TimerActivity"
+            android:parentActivityName="TodoEditorActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tomatofighter.TodoEditorActivity" />
-        </activity>-->
+        </activity>
     </application>
 
 </manifest>

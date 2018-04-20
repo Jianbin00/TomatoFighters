@@ -5,12 +5,12 @@ import android.os.Parcelable;
 
 import com.bigkoo.pickerview.model.IPickerViewData;
 
-
 /**
- * Created by Jianbin Li .
- * The container that holds task's name and the time.
- * Date: 4/18/2018
+ * Jianbin Li
+ * The container hold the name and time of a task.
+ * Date:4/18/2018
  */
+
 public class TaskItem implements IPickerViewData, Parcelable
 {
     public static final Creator<TaskItem> CREATOR = new Creator<TaskItem>()
@@ -36,13 +36,13 @@ public class TaskItem implements IPickerViewData, Parcelable
     public TaskItem(String name)
     {
         this.name = name;
-        this.time= "00:00:00";
+        this.time = "00:00:00";
     }
 
-    public TaskItem(String name,String time)
+    public TaskItem(String name, String time)
     {
         this.name = name;
-        this.time= time;
+        this.time = time;
     }
 
     public String getName()
@@ -66,7 +66,8 @@ public class TaskItem implements IPickerViewData, Parcelable
     }
 
     @Override
-    public String getPickerViewText() {
+    public String getPickerViewText()
+    {
         return time;
     }
 
@@ -82,5 +83,5 @@ public class TaskItem implements IPickerViewData, Parcelable
         dest.writeString(name);
         dest.writeString(time);
     }
-
 }
+

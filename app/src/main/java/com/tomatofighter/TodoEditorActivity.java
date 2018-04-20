@@ -53,8 +53,8 @@ public class TodoEditorActivity extends AppCompatActivity
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
-                holder.setText(R.id.activity, taskItem.name);
-                holder.setText(R.id.time_setter, taskItem.time);
+                holder.setText(R.id.activity, taskItem.getName());
+                holder.setText(R.id.time_setter, taskItem.getTime());
                 //TODO:Set the listener.
                 holder.setOnClickListener(R.id.time_setter, new View.OnClickListener()
                 {
@@ -96,7 +96,7 @@ public class TodoEditorActivity extends AppCompatActivity
                                 })
                                 .setTitleText(getResources().getString(R.string.select_time))
                                 .setLabels("Hour","Min","Sec")
-                                .setSelectOptions(1,1,1)
+                                .setSelectOptions(0, 0, 0)
                                 .setContentTextSize(50)
                                 .setDividerColor(Color.TRANSPARENT)
                                 .setBgColor(Color.BLACK)
@@ -105,6 +105,7 @@ public class TodoEditorActivity extends AppCompatActivity
                                 .setCancelColor(Color.YELLOW)
                                 .setSubmitColor(Color.YELLOW)
                                 .setTextColorCenter(Color.LTGRAY)
+                                .setCyclic(true, true, true)
                                 .isDialog(true)
                                 .build();
                         tpview.setNPicker(hourList,minAndSecList,minAndSecList);
