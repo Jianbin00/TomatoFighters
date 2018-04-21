@@ -296,13 +296,5 @@ public class ViewHolder
         return this;
     }
 
-    public ViewHolder setOnFocusChangeListener(int viewId,
-                                               View.OnFocusChangeListener listener)
-    {
-
-        View view = getView(viewId);
-        view.setOnFocusChangeListener(listener);
-        return this;
-    }
 
 }

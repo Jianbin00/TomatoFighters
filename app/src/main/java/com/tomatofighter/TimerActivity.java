@@ -44,7 +44,7 @@ public class TimerActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         playButton = findViewById(R.id.play_button);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar()!=null)
+        if (getSupportActionBar() != null)
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -119,7 +119,8 @@ public class TimerActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.menu_timer, menu);
         return true;
     }
@@ -148,7 +149,8 @@ public class TimerActivity extends AppCompatActivity
         finish();
     }
 
-    private void initDatas() {
+    private void initDatas()
+    {
         todoList = getIntent().getParcelableExtra("todolist");
         setTitle(todoList.getName());
         mDatas = todoList.getTasks();
@@ -161,8 +163,6 @@ public class TimerActivity extends AppCompatActivity
             }
         }
     }
-
-
 
 
 }
