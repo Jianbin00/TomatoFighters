@@ -55,7 +55,7 @@ public class TodoEditorActivity extends AppCompatActivity
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
                 holder.setText(R.id.activity, taskItem.getName());
                 holder.setText(R.id.time_setter, taskItem.getTime());
-                //TODO:Set the listener
+                //TODO:bug:Dialog only come out after double click
                 holder.setOnClickListener(R.id.activity, new View.OnClickListener()
                 {
                     @Override
@@ -100,6 +100,7 @@ public class TodoEditorActivity extends AppCompatActivity
                     @Override
                     public void onClick(View view)
                     {
+                        //TODO:dialog need to adjust.
                         tpview=new OptionsPickerView.Builder(TodoEditorActivity.this,new OptionsPickerView.OnOptionsSelectListener()
                         {
                             @Override
@@ -184,6 +185,7 @@ public class TodoEditorActivity extends AppCompatActivity
         {
             case R.id.action_play:
                 Intent i=new Intent(TodoEditorActivity.this,TimerActivity.class);
+                i.putExtra("todolist", todoList);
                 startActivity(i);
                 return true;
             case android.R.id.home:
@@ -196,11 +198,6 @@ public class TodoEditorActivity extends AppCompatActivity
     }
     //TODO:Implement the loading method.
     private void initDatas() {
-        /*mDatas = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            mDatas.add(new TaskItem("" + i));
-        }*/
-
         todoList = getIntent().getParcelableExtra("todolist");
         setTitle(todoList.getName());
         mDatas = todoList.getTasks();

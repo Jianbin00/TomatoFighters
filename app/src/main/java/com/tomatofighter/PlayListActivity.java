@@ -63,7 +63,7 @@ public class PlayListActivity extends AppCompatActivity
                     public boolean onSingleTapConfirmed(MotionEvent e)
                     {//单击事件
 
-                        i = new Intent(getApplicationContext(), TodoEditorActivity.class);
+                        i = new Intent(PlayListActivity.this, TodoEditorActivity.class);
                         i.putExtra("todolist", tdlist);
                         startActivity(i);
 
@@ -97,10 +97,13 @@ public class PlayListActivity extends AppCompatActivity
                                         dialogInterface.dismiss();
                                     }
                                 });
+
+
                         inputText.setImeOptions(EditorInfo.IME_ACTION_DONE);
                         inputDialog.show();
                         inputText.setText(tdlist.getName());
                         inputText.selectAll();
+                        //TODO:When click the view, the content of EditText is selected but no keyboard come out.
                         InputMethodManager inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         if (inputManager != null)
                         {

@@ -1,6 +1,7 @@
 package com.tomatofighter;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -8,12 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
 import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
-import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,12 +23,19 @@ import java.util.List;
 public class TimerActivity extends AppCompatActivity
 {
 
+    private final long TIMER_INTERVAL = 1000;
     //FileOutputStream out;
     private ListView mLv;
     private List<TaskItem> mDatas;
     private Toolbar toolbar;
     private TextView timer;
-
+    private TodoList todoList;
+    private boolean isPause;
+    private ToggleButton playButton;
+    private CountDownTimer cdTimer;
+    private long remainTime = 0;
+    private int hour, min, sec;
+    private String timeShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,11 +58,12 @@ public class TimerActivity extends AppCompatActivity
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉it效果
-                holder.setText(R.id.activity, taskItem.name);
-                //TODO:Set the listener.
+                holder.setText(R.id.activity, taskItem.getName());
+                holder.setText(R.id.time_setter, taskItem.getTime());
 
 
-                holder.setOnClickListener(R.id.btnDelete, new View.OnClickListener()
+
+                /*holder.setOnClickListener(R.id.btnDelete, new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
@@ -64,11 +72,48 @@ public class TimerActivity extends AppCompatActivity
                         mDatas.remove(position);
                         notifyDataSetChanged();
                     }
-                });
+                });*/
             }
         });
 
 
+    }
+
+    public void PlayOrPause(View v)
+    {
+
+        if (isPause)
+        {
+            initCountDownTimer(remainTime);
+            cdTimer.start();
+        } else
+        {
+            cdTimer.cancel();
+        }
+        isPause = !isPause;
+    }
+
+    protected void initCountDownTimer(long millisInFuture)
+    {
+        cdTimer = new CountDownTimer(millisInFuture, TIMER_INTERVAL)
+        {
+            @Override
+            public void onTick(long l)
+            {
+                //The format of timer is "hh:mm:ss".
+                hour = (int) l / 3600000;
+                min = (int) (l % 3600000) / 60000;
+                sec = (int) (l % 60000) / 1000;
+                timeShow = String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec);
+                timer.setText(timeShow);
+            }
+
+            @Override
+            public void onFinish()
+            {
+                timer.setText("Done");
+            }
+        };
     }
 
     @Override
@@ -77,7 +122,7 @@ public class TimerActivity extends AppCompatActivity
         return true;
     }
 
-    //TODO:The fuction for add a new task.
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -93,11 +138,18 @@ public class TimerActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    //TODO:Implement the loading method.
+
     private void initDatas() {
-        mDatas = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            mDatas.add(new TaskItem("" + i));
+        todoList = getIntent().getParcelableExtra("todolist");
+        setTitle(todoList.getName());
+        mDatas = todoList.getTasks();
+        int mDatasNum = mDatas.size();
+        for (int i = mDatasNum - 1; i >= 0; i--)
+        {
+            if (mDatas.get(i).getTime().equals("00:00:00"))
+            {
+                mDatas.remove(i);
+            }
         }
     }
 
