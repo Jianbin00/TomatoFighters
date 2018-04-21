@@ -28,9 +28,8 @@ public class TimerActivity extends AppCompatActivity
     private ListView mLv;
     private List<TaskItem> mDatas;
     private Toolbar toolbar;
-    private TextView timer;
+    private TextView remainTimeTV;
     private TodoList todoList;
-    private boolean isPause;
     private ToggleButton playButton;
     private CountDownTimer cdTimer;
     private long remainTime = 0;
@@ -43,13 +42,14 @@ public class TimerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
         toolbar = findViewById(R.id.toolbar);
+        playButton = findViewById(R.id.play_button);
         setSupportActionBar(toolbar);
         if(getSupportActionBar()!=null)
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         mLv = findViewById(R.id.tasks);
-        timer=findViewById(R.id.remain_time);
+        remainTimeTV = findViewById(R.id.remain_time);
         initDatas();
 
         mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_timer)
@@ -82,15 +82,16 @@ public class TimerActivity extends AppCompatActivity
     public void PlayOrPause(View v)
     {
 
-        if (isPause)
+        if (playButton.isChecked())
+        {
+            cdTimer.cancel();
+        } else
         {
             initCountDownTimer(remainTime);
             cdTimer.start();
-        } else
-        {
-            cdTimer.cancel();
+
         }
-        isPause = !isPause;
+        playButton.setChecked(!playButton.isChecked());
     }
 
     protected void initCountDownTimer(long millisInFuture)
@@ -98,20 +99,21 @@ public class TimerActivity extends AppCompatActivity
         cdTimer = new CountDownTimer(millisInFuture, TIMER_INTERVAL)
         {
             @Override
-            public void onTick(long l)
+            public void onTick(long millisUntilFinished)
             {
-                //The format of timer is "hh:mm:ss".
-                hour = (int) l / 3600000;
-                min = (int) (l % 3600000) / 60000;
-                sec = (int) (l % 60000) / 1000;
+                remainTime = millisUntilFinished;
+                //The format of remainTimeTV is "hh:mm:ss".
+                hour = (int) millisUntilFinished / 3600000;
+                min = (int) (millisUntilFinished % 3600000) / 60000;
+                sec = (int) (millisUntilFinished % 60000) / 1000;
                 timeShow = String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec);
-                timer.setText(timeShow);
+                remainTimeTV.setText(timeShow);
             }
 
             @Override
             public void onFinish()
             {
-                timer.setText("Done");
+                remainTimeTV.setText("Done");
             }
         };
     }
@@ -137,6 +139,13 @@ public class TimerActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        finish();
     }
 
     private void initDatas() {

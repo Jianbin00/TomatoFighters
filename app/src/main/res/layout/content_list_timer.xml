@@ -30,14 +30,14 @@
             android:orientation="horizontal">
 
 
-            <Button
+            <ToggleButton
                 android:id="@+id/play_button"
                 android:layout_width="@dimen/play_button_size"
                 android:layout_height="@dimen/play_button_size"
+                android:background="@drawable/toggle_button"
+                android:onClick="PlayOrPause"/>
 
-                android:background="@android:drawable/ic_media_play"/>
-
-            <Space
+            <!--<Space
                 android:layout_width="@dimen/space_between_buttons"
                 android:layout_height="wrap_content"
                 />
@@ -47,7 +47,7 @@
                 android:layout_width="@dimen/play_button_size"
                 android:layout_height="@dimen/play_button_size"
 
-                android:background="@android:drawable/ic_menu_revert"/>
+                android:background="@android:drawable/ic_menu_resume"/>-->
 
 
         </LinearLayout>
