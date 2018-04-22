@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Jianbin Li
@@ -27,18 +28,17 @@ public class TodoList implements Parcelable
         @Override
         public TodoList[] newArray(int size)
         {
-            //创建一个类型为T，长度为size的数组，仅一句话（return new T[size])即可。方法是供外部类反序列化本类数组使用。
             return new TodoList[size];
         }
     };
     private String name;
-    private ArrayList<TaskItem> tasks;
+    private List<TaskItem> tasks;
 
     public TodoList(String name)
     {
         this.name = name;
         this.tasks = new ArrayList<>();
-        addTasks(tasks, 5);
+        addNewTasks(tasks, 5);
     }
 
     public TodoList(String name, ArrayList<TaskItem> tasks)
@@ -57,17 +57,17 @@ public class TodoList implements Parcelable
         this.name = name;
     }
 
-    public ArrayList<TaskItem> getTasks()
+    public List<TaskItem> getTasks()
     {
         return tasks;
     }
 
-    public void setTasks(ArrayList<TaskItem> tasks)
+    public void setTasks(List<TaskItem> tasks)
     {
         this.tasks = tasks;
     }
 
-    public void addTasks(ArrayList<TaskItem> tasks, int numberOfTasks)
+    public void addNewTasks(List<TaskItem> tasks, int numberOfTasks)
     {
         TaskItem newTask;
         for (int i = 0; i < numberOfTasks; i++)
@@ -77,9 +77,9 @@ public class TodoList implements Parcelable
         }
     }
 
-    public void addTask(ArrayList<TaskItem> tasks)
+    public void addNewTask(List<TaskItem> tasks)
     {
-        addTasks(tasks, 1);
+        tasks.add(new TaskItem("NewTask"));
     }
 
     @Override

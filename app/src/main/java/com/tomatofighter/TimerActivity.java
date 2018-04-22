@@ -58,22 +58,8 @@ public class TimerActivity extends AppCompatActivity
             @Override
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
             {
-                //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉it效果
                 holder.setText(R.id.activity, taskItem.getName());
                 holder.setText(R.id.time_setter, taskItem.getTime());
-
-
-
-                /*holder.setOnClickListener(R.id.btnDelete, new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        ((SwipeMenuLayout) holder.getConvertView()).quickClose();
-                        mDatas.remove(position);
-                        notifyDataSetChanged();
-                    }
-                });*/
             }
         });
         playButton = findViewById(R.id.play_button);
@@ -95,7 +81,11 @@ public class TimerActivity extends AppCompatActivity
                 }
             }
         });
-        remainTime = TimeStringToLong(mDatas.get(0).getTime());
+        if (mDatas.size() > 0)
+        {
+            remainTime = TimeStringToLong(mDatas.get(0).getTime());
+        }
+
     }
 
 

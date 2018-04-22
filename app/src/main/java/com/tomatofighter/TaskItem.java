@@ -9,6 +9,8 @@ import com.bigkoo.pickerview.model.IPickerViewData;
  * Jianbin Li
  * The container hold the name and time of a task.
  * Date:4/18/2018
+ * add a boolean isLast to record the last data.
+ * Date:4/21/2018
  */
 
 public class TaskItem implements IPickerViewData, Parcelable
@@ -30,8 +32,9 @@ public class TaskItem implements IPickerViewData, Parcelable
             return new TaskItem[size];
         }
     };
-    public String name;
-    public String time;
+    public boolean isLast;
+    private String name;
+    private String time;
 
     public TaskItem(String name)
     {

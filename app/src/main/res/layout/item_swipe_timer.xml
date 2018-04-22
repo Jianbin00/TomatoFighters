@@ -6,9 +6,9 @@
     android:layout_height="100dp"
     android:clickable="true"
     android:paddingBottom="1dp"
-    app:ios="true"
-    app:leftSwipe="true"
-    app:swipeEnable="true">
+    app:ios="false"
+    app:leftSwipe="false"
+    app:swipeEnable="false">
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"

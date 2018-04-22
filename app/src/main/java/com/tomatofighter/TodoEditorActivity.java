@@ -23,7 +23,7 @@ import java.util.List;
 
 public class TodoEditorActivity extends AppCompatActivity
 {
-    private final short MAX_HOUR = 99;
+    private static final short MAX_HOUR = 24;
     private ListView mLv;
     private TodoList todoList;
     private List<TaskItem> mDatas;
@@ -109,6 +109,12 @@ public class TodoEditorActivity extends AppCompatActivity
 
                                 msg = String.format("%02d", option1) + ":" + String.format("%02d", option2) + ":" + String.format("%02d", option3);
                                 taskItem.setTime(msg);
+                                if (taskItem.isLast && !msg.equals(getResources().getString(R.string.default_time)))
+                                {
+                                    taskItem.isLast = false;
+                                    todoList.addNewTask(mDatas);
+                                    setLast(mDatas);
+                                }
                                 notifyDataSetChanged();
                             }
                         })
@@ -174,7 +180,6 @@ public class TodoEditorActivity extends AppCompatActivity
         return true;
     }
 
-    //TODO:The fuction for add a new task.
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -196,11 +201,21 @@ public class TodoEditorActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    //TODO:Implement the loading method.
+
     private void initDatas() {
         todoList = getIntent().getParcelableExtra("todolist");
         setTitle(todoList.getName());
         mDatas = todoList.getTasks();
+        setLast(mDatas);
+    }
+
+    private void setLast(List<TaskItem> tasks)
+    {
+        int dataNum = tasks.size();
+        if (dataNum > 0)
+        {
+            tasks.get(dataNum - 1).isLast = true;
+        }
     }
 
     private void initOptions()
