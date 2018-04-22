@@ -26,6 +26,7 @@ public class TimerActivity extends AppCompatActivity
     private final long TIMER_INTERVAL = 1000;
     //FileOutputStream out;
     private ListView mLv;
+    private CommonAdapter<TaskItem> CAdapter;
     private List<TaskItem> mDatas;
     private Toolbar toolbar;
     private TextView remainTimeTV;
@@ -35,7 +36,7 @@ public class TimerActivity extends AppCompatActivity
     private long remainTime;
     private int hour, min, sec;
     private String timeShow;
-    private boolean isPlay;
+    private boolean isPlay, isLast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,7 +54,7 @@ public class TimerActivity extends AppCompatActivity
         remainTimeTV = findViewById(R.id.remain_time);
         initDatas();
 
-        mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_timer)
+        CAdapter = new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_timer)
         {
             @Override
             public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
@@ -61,7 +62,8 @@ public class TimerActivity extends AppCompatActivity
                 holder.setText(R.id.activity, taskItem.getName());
                 holder.setText(R.id.time_setter, taskItem.getTime());
             }
-        });
+        };
+        mLv.setAdapter(CAdapter);
         playButton = findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener()
         {
@@ -98,26 +100,48 @@ public class TimerActivity extends AppCompatActivity
             public void onTick(long millisUntilFinished)
             {
                 remainTime = millisUntilFinished;
-                //The format of remainTimeTV is "hh:mm:ss".
-                hour = (int) millisUntilFinished / 3600000;
-                min = (int) (millisUntilFinished % 3600000) / 60000;
-                sec = (int) (millisUntilFinished % 60000) / 1000;
-                timeShow = String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec);
-                remainTimeTV.setText(timeShow);
+                remainTimeTV.setText(timeShow(millisUntilFinished));
             }
 
             @Override
             public void onFinish()
             {
                 remainTime = 0;
-                remainTimeTV.setText("Done");
+                remainTimeTV.setText(timeShow(remainTime));
+                if (mDatas.size() > 0)
+                {
+                    if (mDatas.get(0).isLast)
+                    {
+                        remainTimeTV.setText("Done");
+                    } else
+                    {
+                        TaskItem movedItem = mDatas.get(0);
+                        mDatas.remove(0);
+                        mDatas.add(movedItem);
+                        CAdapter.notifyDataSetChanged();
+                        remainTime = TimeStringToLong(mDatas.get(0).getTime());
+                        initCountDownTimer(remainTime);
+                        cdTimer.start();
+                    }
+                }
+
+            }
+
+            private String timeShow(long millisUntilFinished)
+            {
+                //The format of remainTimeTV is "hh:mm:ss".
+                hour = (int) millisUntilFinished / 3600000;
+                min = (int) (millisUntilFinished % 3600000) / 60000;
+                sec = (int) (millisUntilFinished % 60000) / 1000;
+                return String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec);
+
             }
         };
     }
 
     public long TimeStringToLong(String timeString)
     {
-        long time = 0;
+        long time;
         if (timeString.matches("\\d\\d:\\d\\d:\\d\\d"))
         {
             String[] digits = timeString.split(":");
@@ -172,6 +196,16 @@ public class TimerActivity extends AppCompatActivity
             {
                 mDatas.remove(i);
             }
+        }
+        setLast(mDatas);
+    }
+
+    private void setLast(List<TaskItem> tasks)
+    {
+        int dataNum = tasks.size();
+        if (dataNum > 0)
+        {
+            tasks.get(dataNum - 1).isLast = true;
         }
     }
 
