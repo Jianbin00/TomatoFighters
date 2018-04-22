@@ -30,12 +30,12 @@
             android:orientation="horizontal">
 
 
-            <ToggleButton
+            <ImageButton
                 android:id="@+id/play_button"
                 android:layout_width="@dimen/play_button_size"
                 android:layout_height="@dimen/play_button_size"
-                android:background="@drawable/toggle_button"
-                android:onClick="PlayOrPause"/>
+                android:background="@android:drawable/ic_media_play"
+                android:visibility="invisible"/>
 
             <!--<Space
                 android:layout_width="@dimen/space_between_buttons"

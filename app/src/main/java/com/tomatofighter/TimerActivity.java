@@ -7,9 +7,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
 import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
@@ -30,11 +30,12 @@ public class TimerActivity extends AppCompatActivity
     private Toolbar toolbar;
     private TextView remainTimeTV;
     private TodoList todoList;
-    private ToggleButton playButton;
+    private ImageButton playButton;
     private CountDownTimer cdTimer;
-    private long remainTime = 0;
+    private long remainTime;
     private int hour, min, sec;
     private String timeShow;
+    private boolean isPlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,7 +43,7 @@ public class TimerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
         toolbar = findViewById(R.id.toolbar);
-        playButton = findViewById(R.id.play_button);
+
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
         {
@@ -75,24 +76,28 @@ public class TimerActivity extends AppCompatActivity
                 });*/
             }
         });
+        playButton = findViewById(R.id.play_button);
+        playButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                if (!isPlay)
+                {
+                    initCountDownTimer(remainTime);
+                    cdTimer.start();
+                    playButton.setImageResource(android.R.drawable.ic_media_pause);
 
-
+                } else
+                {
+                    cdTimer.cancel();
+                    playButton.setImageResource(android.R.drawable.ic_media_play);
+                }
+            }
+        });
+        remainTime = TimeStringToLong(mDatas.get(0).getTime());
     }
 
-    public void PlayOrPause(View v)
-    {
-
-        if (playButton.isChecked())
-        {
-            cdTimer.cancel();
-        } else
-        {
-            initCountDownTimer(remainTime);
-            cdTimer.start();
-
-        }
-        playButton.setChecked(!playButton.isChecked());
-    }
 
     protected void initCountDownTimer(long millisInFuture)
     {
@@ -113,9 +118,24 @@ public class TimerActivity extends AppCompatActivity
             @Override
             public void onFinish()
             {
+                remainTime = 0;
                 remainTimeTV.setText("Done");
             }
         };
+    }
+
+    public long TimeStringToLong(String timeString)
+    {
+        long time = 0;
+        if (timeString.matches("\\d\\d:\\d\\d:\\d\\d"))
+        {
+            String[] digits = timeString.split(":");
+            time = Integer.parseInt(digits[0]) * 3600000 + Integer.parseInt(digits[1]) * 60000 + Integer.parseInt(digits[2]) * 1000;
+        } else
+        {
+            throw new IllegalArgumentException(timeString);
+        }
+        return time;
     }
 
     @Override
