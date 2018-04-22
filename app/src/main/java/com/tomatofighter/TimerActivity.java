@@ -79,6 +79,7 @@ public class TimerActivity extends AppCompatActivity
                     cdTimer.cancel();
                     playButton.setImageResource(android.R.drawable.ic_media_play);
                 }
+                isPlay = !isPlay;
             }
         });
         if (mDatas.size() > 0)

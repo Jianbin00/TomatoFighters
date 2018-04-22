@@ -34,8 +34,7 @@
                 android:id="@+id/play_button"
                 android:layout_width="@dimen/play_button_size"
                 android:layout_height="@dimen/play_button_size"
-                android:background="@android:drawable/ic_media_play"
-                android:visibility="invisible"/>
+                android:src="@android:drawable/ic_media_play"/>
 
             <!--<Space
                 android:layout_width="@dimen/space_between_buttons"

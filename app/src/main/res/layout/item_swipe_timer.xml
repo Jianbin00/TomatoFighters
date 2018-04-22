@@ -38,14 +38,6 @@
 
     </android.support.v7.widget.LinearLayoutCompat>
 
-    <Button
-        android:id="@+id/btnDelete"
-        android:layout_width="60dp"
-        android:layout_height="match_parent"
-        android:background="@color/red"
-        android:text="@string/delete"
-        android:textColor="@android:color/white"/>
-
 
 
 </com.mcxtzhang.swipemenulib.SwipeMenuLayout>
