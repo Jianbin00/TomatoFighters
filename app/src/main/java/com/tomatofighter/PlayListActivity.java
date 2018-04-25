@@ -21,8 +21,8 @@ import android.widget.Toast;
 
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 /*
 Author: Jianbin Li
@@ -34,9 +34,12 @@ public class PlayListActivity extends AppCompatActivity
 {
     private ListView mLv;
     private CommonAdapter mAdapter;
-    private List<TodoList> mDatas;
+    private ArrayList<TodoList> mDatas;
     private Toolbar toolbar;
     private Intent i;
+    private InputStream stream;
+    private TimerXmlParser parser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -127,7 +130,6 @@ public class PlayListActivity extends AppCompatActivity
                 });
 
 
-
                 holder.setOnClickListener(R.id.btnDelete, new View.OnClickListener()
                 {
                     @Override
@@ -148,7 +150,8 @@ public class PlayListActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.menu_play_list, menu);
         return true;
     }
@@ -164,8 +167,10 @@ public class PlayListActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add)
         {
-            List<TodoList> toBeAdded = new ArrayList<TodoList>();
-            toBeAdded.add(new TodoList("TODO"));
+            ArrayList<TodoList> toBeAdded = new ArrayList<TodoList>();
+            TodoList newTodoList = new TodoList("TODO");
+            newTodoList.addNewTasks(new ArrayList<TaskItem>(), 5);
+            toBeAdded.add(newTodoList);
             mAdapter.addDatas(toBeAdded);
             return true;
         }
@@ -173,12 +178,28 @@ public class PlayListActivity extends AppCompatActivity
     }
 
 
-    private void initDatas() {
+/*    private void initDatas() {
         mDatas = new ArrayList<>();
-        mDatas.add(new TodoList("TODO"));
+        TodoList newTodoList=new TodoList("TODO");
+        newTodoList.addNewTasks(new ArrayList<TaskItem>(),5);
+        mDatas.add(newTodoList);
+    }*/
+
+    private void initDatas()
+
+    {
+        parser = new TimerXmlParser();
+        try
+        {
+            stream = getResources().openRawResource(R.raw.initplaylist);
+            mDatas = parser.parse(stream);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this, getResources().getText(R.string.xml_read_error), Toast.LENGTH_SHORT).show();
+        }
+
     }
-
-
 
 
 }

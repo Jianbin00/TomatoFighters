@@ -26,7 +26,7 @@ public class TodoEditorActivity extends AppCompatActivity
     private static final short MAX_HOUR = 24;
     private ListView mLv;
     private TodoList todoList;
-    private List<TaskItem> mDatas;
+    private ArrayList<TaskItem> mDatas;
     private Toolbar toolbar;
     private OptionsPickerView tpview;
     private ArrayList<Short> hourList;
@@ -167,6 +167,7 @@ public class TodoEditorActivity extends AppCompatActivity
                     {
                         ((SwipeMenuLayout) holder.getConvertView()).quickClose();
                         mDatas.remove(position);
+                        setLast(mDatas);
                         notifyDataSetChanged();
                     }
                 });

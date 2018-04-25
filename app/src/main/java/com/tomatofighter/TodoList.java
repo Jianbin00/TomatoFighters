@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Jianbin Li
@@ -32,7 +31,7 @@ public class TodoList implements Parcelable
         }
     };
     private String name;
-    private List<TaskItem> tasks;
+    private ArrayList<TaskItem> tasks;
 
     public TodoList(String name)
     {
@@ -57,17 +56,17 @@ public class TodoList implements Parcelable
         this.name = name;
     }
 
-    public List<TaskItem> getTasks()
+    public ArrayList<TaskItem> getTasks()
     {
         return tasks;
     }
 
-    public void setTasks(List<TaskItem> tasks)
+    public void setTasks(ArrayList<TaskItem> tasks)
     {
         this.tasks = tasks;
     }
 
-    public void addNewTasks(List<TaskItem> tasks, int numberOfTasks)
+    public void addNewTasks(ArrayList<TaskItem> tasks, int numberOfTasks)
     {
         TaskItem newTask;
         for (int i = 0; i < numberOfTasks; i++)
@@ -77,7 +76,7 @@ public class TodoList implements Parcelable
         }
     }
 
-    public void addNewTask(List<TaskItem> tasks)
+    public void addNewTask(ArrayList<TaskItem> tasks)
     {
         tasks.add(new TaskItem("NewTask"));
     }

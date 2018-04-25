@@ -19,7 +19,6 @@
         />
 
 
-
     <Button
         android:id="@+id/btnDelete"
         android:layout_width="60dp"
@@ -27,8 +26,6 @@
         android:background="@color/red"
         android:text="@string/delete"
         android:textColor="@android:color/white"/>
-
-
 
 
 </com.mcxtzhang.swipemenulib.SwipeMenuLayout>
