@@ -1,4 +1,4 @@
-package com.tomatofighter;
+package com.tomatofighters;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,8 +25,8 @@ public class TodoEditorActivity extends AppCompatActivity
 {
     private static final short MAX_HOUR = 24;
     private ListView mLv;
-    private TodoList todoList;
-    private ArrayList<TaskItem> mDatas;
+    private PlayList todoList;
+    private ArrayList<Track> mDatas;
     private Toolbar toolbar;
     private OptionsPickerView tpview;
     private ArrayList<Short> hourList;
@@ -47,10 +47,10 @@ public class TodoEditorActivity extends AppCompatActivity
 
         initDatas();
         initOptions();
-        mLv.setAdapter(new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_todo_editor)
+        mLv.setAdapter(new CommonAdapter<Track>(this, mDatas, R.layout.item_swipe_todo_editor)
         {
             @Override
-            public void convert(final ViewHolder holder, final TaskItem taskItem, final int position)
+            public void convert(final ViewHolder holder, final Track taskItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
                 holder.setText(R.id.activity, taskItem.getName());
@@ -112,7 +112,7 @@ public class TodoEditorActivity extends AppCompatActivity
                                 if (taskItem.isLast && !msg.equals(getResources().getString(R.string.default_time)))
                                 {
                                     taskItem.isLast = false;
-                                    todoList.addNewTask(mDatas);
+                                    todoList.addNewTrack(mDatas);
                                     setLast(mDatas);
                                 }
                                 notifyDataSetChanged();
@@ -206,11 +206,11 @@ public class TodoEditorActivity extends AppCompatActivity
     private void initDatas() {
         todoList = getIntent().getParcelableExtra("todolist");
         setTitle(todoList.getName());
-        mDatas = todoList.getTasks();
+        mDatas = todoList.getTracks();
         setLast(mDatas);
     }
 
-    private void setLast(List<TaskItem> tasks)
+    private void setLast(List<Track> tasks)
     {
         int dataNum = tasks.size();
         if (dataNum > 0)

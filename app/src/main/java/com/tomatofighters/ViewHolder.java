@@ -1,4 +1,4 @@
-package com.tomatofighter;
+package com.tomatofighters;
 
 
 import android.annotation.SuppressLint;

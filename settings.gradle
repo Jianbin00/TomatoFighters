@@ -1,1 +1,1 @@
-include ':app', ':swipetest', ':swipemenulib', ':timer'
+include ':app', ':swipemenulib'

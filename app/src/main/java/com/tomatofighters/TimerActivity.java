@@ -1,4 +1,4 @@
-package com.tomatofighter;
+package com.tomatofighters;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -26,11 +26,11 @@ public class TimerActivity extends AppCompatActivity
     private final long TIMER_INTERVAL = 1000;
     //FileOutputStream out;
     private ListView mLv;
-    private CommonAdapter<TaskItem> CAdapter;
-    private List<TaskItem> mDatas;
+    private CommonAdapter<Track> CAdapter;
+    private List<Track> mDatas;
     private Toolbar toolbar;
     private TextView remainTimeTV;
-    private TodoList todoList;
+    private PlayList todoList;
     private ImageButton playButton;
     private CountDownTimer cdTimer;
     private long remainTime;
@@ -54,10 +54,10 @@ public class TimerActivity extends AppCompatActivity
         remainTimeTV = findViewById(R.id.remain_time);
         initDatas();
 
-        CAdapter = new CommonAdapter<TaskItem>(this, mDatas, R.layout.item_swipe_timer)
+        CAdapter = new CommonAdapter<Track>(this, mDatas, R.layout.item_swipe_timer)
         {
             @Override
-            public void convert(final ViewHolder holder, TaskItem taskItem, final int position)
+            public void convert(final ViewHolder holder, Track taskItem, final int position)
             {
                 holder.setText(R.id.activity, taskItem.getName());
                 holder.setText(R.id.time_setter, taskItem.getTime());
@@ -115,7 +115,7 @@ public class TimerActivity extends AppCompatActivity
                         remainTimeTV.setText("Done");
                     } else
                     {
-                        TaskItem movedItem = mDatas.get(0);
+                        Track movedItem = mDatas.get(0);
                         mDatas.remove(0);
                         mDatas.add(movedItem);
                         CAdapter.notifyDataSetChanged();
@@ -188,7 +188,7 @@ public class TimerActivity extends AppCompatActivity
     {
         todoList = getIntent().getParcelableExtra("todolist");
         setTitle(todoList.getName());
-        mDatas = todoList.getTasks();
+        mDatas = todoList.getTracks();
         int mDatasNum = mDatas.size();
         for (int i = mDatasNum - 1; i >= 0; i--)
         {
@@ -200,7 +200,7 @@ public class TimerActivity extends AppCompatActivity
         setLast(mDatas);
     }
 
-    private void setLast(List<TaskItem> tasks)
+    private void setLast(List<Track> tasks)
     {
         int dataNum = tasks.size();
         if (dataNum > 0)

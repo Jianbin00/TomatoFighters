@@ -1,6 +1,7 @@
-package com.tomatofighter;
+package com.tomatofighters;
 
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
+import org.w3c.dom.Document;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -32,13 +35,15 @@ This is the launcher activity.
  */
 public class PlayListActivity extends AppCompatActivity
 {
+    private final static String DEFAULT_DB_NAME = "data.db";
     private ListView mLv;
     private CommonAdapter mAdapter;
-    private ArrayList<TodoList> mDatas;
+    private ArrayList<PlayList> mDatas;
     private Toolbar toolbar;
     private Intent i;
     private InputStream stream;
-    private TimerXmlParser parser;
+    private Document doc;
+    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,12 +55,12 @@ public class PlayListActivity extends AppCompatActivity
         mLv = findViewById(R.id.tasks);
 
         initDatas();
-        mAdapter = new CommonAdapter<TodoList>(this, mDatas, R.layout.item_swipe_play_list)
+        mAdapter = new CommonAdapter<PlayList>(this, mDatas, R.layout.item_swipe_play_list)
         {
 
 
             @Override
-            public void convert(final ViewHolder holder, final TodoList tdlist, final int position)
+            public void convert(final ViewHolder holder, final PlayList tdlist, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
                 holder.setText(R.id.activity, tdlist.getName());
@@ -167,10 +172,10 @@ public class PlayListActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add)
         {
-            ArrayList<TodoList> toBeAdded = new ArrayList<TodoList>();
-            TodoList newTodoList = new TodoList("TODO");
-            newTodoList.addNewTasks(new ArrayList<TaskItem>(), 5);
-            toBeAdded.add(newTodoList);
+            ArrayList<PlayList> toBeAdded = new ArrayList<PlayList>();
+            PlayList newplayList = new PlayList("TODO");
+            newplayList.addNewTasks(new ArrayList<Track>(), 5);
+            toBeAdded.add(newplayList);
             mAdapter.addDatas(toBeAdded);
             return true;
         }
@@ -188,16 +193,27 @@ public class PlayListActivity extends AppCompatActivity
     private void initDatas()
 
     {
-        parser = new TimerXmlParser();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, DEFAULT_DB_NAME).build();
+
+
+
+
+/*        mDatas=new ArrayList<>();
         try
         {
             stream = getResources().openRawResource(R.raw.initplaylist);
-            mDatas = parser.parse(stream);
+            doc = TimerXmlParser.getDocument(stream);
+            Node root=TimerXmlParser.getRootNode(doc);
+            int num=root.getChildNodes().getLength();
+            for(int i=0;i<num;i++)
+            {
+                mDatas.add(new PlayList(TimerXmlParser.getPlayListName(doc,i)));
+            }
         } catch (Exception e)
         {
             e.printStackTrace();
             Toast.makeText(this, getResources().getText(R.string.xml_read_error), Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
     }
 

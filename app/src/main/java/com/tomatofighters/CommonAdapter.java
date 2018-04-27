@@ -1,4 +1,4 @@
-package com.tomatofighter;
+package com.tomatofighters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
