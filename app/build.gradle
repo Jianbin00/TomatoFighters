@@ -15,10 +15,18 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            ext.enableCrashlytics = false
+        }
     }
     sourceSets {
         main { res.srcDirs = ['src/main/res', 'src/main/res/layout', 'src/main/res/raw'] }
         test.resources.srcDirs += 'src/test/resources'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     testOptions { unitTests.returnDefaultValues = true }
 }

@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 public class DatabaseTest
 {
     private PlayListDAO plDao;
-    private TrackDAO tDAO;
     private AppDatabase db;
 
     @Before
@@ -32,7 +31,6 @@ public class DatabaseTest
         Context context = InstrumentationRegistry.getTargetContext();
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
         plDao = db.PlayListDAO();
-        tDAO = db.TrackDAO();
     }
 
     @After
@@ -44,7 +42,9 @@ public class DatabaseTest
     @Test
     public void writeUserAndReadInList() throws Exception
     {
-        assertEquals(plDao.findById(0).getName(), "TODO1");
-        assertEquals(tDAO.findById(0).getName(), "Task 1");
+        plDao.insertPlayList(new PlayList("TODO"));
+
+        assertEquals(plDao.getPlayList(0).getName(), "TODO");
+        //assertEquals(plDao.getPlayList(0).getValue().getTracks().get(0), "Task 1");
     }
 }

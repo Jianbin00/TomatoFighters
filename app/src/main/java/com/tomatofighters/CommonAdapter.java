@@ -17,11 +17,11 @@ import java.util.List;
 public abstract class CommonAdapter<T> extends BaseAdapter
 {
     protected Context mContext;
-    protected ArrayList<T> mDatas;
+    protected List<T> mDatas;
     protected LayoutInflater mInflater;
     private int layoutId;
 
-    public CommonAdapter(Context context, ArrayList<T> datas, int layoutId)
+    public CommonAdapter(Context context, List<T> datas, int layoutId)
     {
         this.mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -77,11 +77,11 @@ public abstract class CommonAdapter<T> extends BaseAdapter
      *
      * @param list
      */
-    public void addDatas(ArrayList<T> list)
+    public void addDatas(List<T> list)
     {
         if (null != list)
         {
-            ArrayList<T> temp = new ArrayList<>();
+            List<T> temp = new ArrayList<>();
             temp.addAll(list);
             if (this.mDatas != null)
             {
@@ -105,13 +105,13 @@ public abstract class CommonAdapter<T> extends BaseAdapter
      *
      * @param list
      */
-    public void setDatas(ArrayList<T> list)
+    public void setDatas(List<T> list)
     {
         if (this.mDatas != null)
         {
             if (null != list)
             {
-                ArrayList<T> temp = new ArrayList<>();
+                List<T> temp = new ArrayList<>();
                 temp.addAll(list);
                 this.mDatas.clear();
                 this.mDatas.addAll(temp);

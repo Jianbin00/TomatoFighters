@@ -188,7 +188,7 @@ public class TimerActivity extends AppCompatActivity
     {
         todoList = getIntent().getParcelableExtra("todolist");
         setTitle(todoList.getName());
-        mDatas = todoList.getTracks();
+        //mDatas = todoList.getTracks();
         int mDatasNum = mDatas.size();
         for (int i = mDatasNum - 1; i >= 0; i--)
         {

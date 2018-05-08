@@ -1,14 +1,15 @@
 package com.tomatofighters;
 
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,10 +23,8 @@ import android.widget.Toast;
 
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
-import org.w3c.dom.Document;
-
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /*
 Author: Jianbin Li
@@ -38,11 +37,11 @@ public class PlayListActivity extends AppCompatActivity
     private final static String DEFAULT_DB_NAME = "data.db";
     private ListView mLv;
     private CommonAdapter mAdapter;
-    private ArrayList<PlayList> mDatas;
+    private List<PlayList> mDatas;
+    //private LiveData<List<PlayList>> lDatas;
     private Toolbar toolbar;
     private Intent i;
-    private InputStream stream;
-    private Document doc;
+    private AppDatabaseHelper dbHelper;
     private AppDatabase db;
 
     @Override
@@ -53,26 +52,25 @@ public class PlayListActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mLv = findViewById(R.id.tasks);
-
         initDatas();
         mAdapter = new CommonAdapter<PlayList>(this, mDatas, R.layout.item_swipe_play_list)
         {
 
 
             @Override
-            public void convert(final ViewHolder holder, final PlayList tdlist, final int position)
+            public void convert(final ViewHolder holder, final PlayList playlist, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
-                holder.setText(R.id.activity, tdlist.getName());
+                holder.setText(R.id.activity, playlist.getName());
 
                 final GestureDetector gestureDetector = new GestureDetector(PlayListActivity.this, new GestureDetector.SimpleOnGestureListener()
                 {
                     @Override
                     public boolean onSingleTapConfirmed(MotionEvent e)
-                    {//单击事件
+                    {
 
                         i = new Intent(PlayListActivity.this, TodoEditorActivity.class);
-                        i.putExtra("todolist", tdlist);
+                        i.putExtra("playlistId", position);
                         startActivity(i);
 
                         return super.onSingleTapConfirmed(e);
@@ -82,6 +80,7 @@ public class PlayListActivity extends AppCompatActivity
                     public boolean onDoubleTap(MotionEvent e)
                     {
                         final EditText inputText = new EditText(PlayListActivity.this);
+                        InputMethodManager inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputText.setMaxLines(1);
                         inputText.setSingleLine(true);
 
@@ -93,8 +92,9 @@ public class PlayListActivity extends AppCompatActivity
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
-                                        tdlist.setName(inputText.getText().toString());
+                                        playlist.setName(inputText.getText().toString());
                                         dialogInterface.dismiss();
+                                        dismissInputMethod(inputManager, inputText);
                                     }
                                 })
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
@@ -103,20 +103,18 @@ public class PlayListActivity extends AppCompatActivity
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
                                         dialogInterface.dismiss();
+                                        dismissInputMethod(inputManager, inputText);
                                     }
                                 });
 
 
                         inputText.setImeOptions(EditorInfo.IME_ACTION_DONE);
                         inputDialog.show();
-                        inputText.setText(tdlist.getName());
+                        inputText.setText(playlist.getName());
                         inputText.selectAll();
                         //TODO:When click the view, the content of EditText is selected but no keyboard come out.
-                        InputMethodManager inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (inputManager != null)
-                        {
-                            inputManager.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT);
-                        }
+                        popUpInputMethod(inputManager, inputText);
+
 
 
                         return super.onDoubleTap(e);
@@ -141,7 +139,6 @@ public class PlayListActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         Toast.makeText(PlayListActivity.this, "删除:" + position, Toast.LENGTH_SHORT).show();
-                        //在ListView里，点击侧滑菜单上的选项时，如果想让侧滑菜单同时关闭，调用这句话
                         ((SwipeMenuLayout) holder.getConvertView()).quickClose();
                         mDatas.remove(position);
                         notifyDataSetChanged();
@@ -153,6 +150,18 @@ public class PlayListActivity extends AppCompatActivity
         };
         mLv.setAdapter(mAdapter);
     }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if (db != null)
+        {
+            db.close();
+        }
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -172,15 +181,39 @@ public class PlayListActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add)
         {
-            ArrayList<PlayList> toBeAdded = new ArrayList<PlayList>();
+            List<Track> newTracks = new LinkedList<>();
             PlayList newplayList = new PlayList("TODO");
-            newplayList.addNewTasks(new ArrayList<Track>(), 5);
-            toBeAdded.add(newplayList);
-            mAdapter.addDatas(toBeAdded);
+            /*toBeAdded.add(newplayList);
+            mAdapter.addDatas(toBeAdded);*/
+
+            AsyncTask.execute(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        int playListId = (int) db.PlayListDAO().insertPlayList(newplayList);
+                        for (int i = 0; i < 5; i++)
+                        {
+                            newTracks.add(new Track(0, "TODO " + i, "00:00:00", playListId));
+
+                        }
+                        db.PlayListDAO().insertTracks(newTracks);
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
 /*    private void initDatas() {
@@ -193,8 +226,10 @@ public class PlayListActivity extends AppCompatActivity
     private void initDatas()
 
     {
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, DEFAULT_DB_NAME).build();
-
+        db = AppDatabase.getDatabase(getApplicationContext());
+        dbHelper = new AppDatabaseHelper(db);
+        mDatas = dbHelper.getPlayLists().getValue();
+        Log.d("Test", "" + (mDatas == null));
 
 
 
@@ -215,6 +250,22 @@ public class PlayListActivity extends AppCompatActivity
             Toast.makeText(this, getResources().getText(R.string.xml_read_error), Toast.LENGTH_SHORT).show();
         }*/
 
+    }
+
+    private void popUpInputMethod(InputMethodManager im, EditText inputText)
+    {
+        if (im != null)
+        {
+            im.showSoftInput(inputText, InputMethodManager.SHOW_FORCED);
+        }
+    }
+
+    private void dismissInputMethod(InputMethodManager im, EditText inputText)
+    {
+        if (im != null)
+        {
+            im.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
 

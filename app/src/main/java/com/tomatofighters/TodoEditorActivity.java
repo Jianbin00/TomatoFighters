@@ -26,11 +26,11 @@ public class TodoEditorActivity extends AppCompatActivity
     private static final short MAX_HOUR = 24;
     private ListView mLv;
     private PlayList todoList;
-    private ArrayList<Track> mDatas;
+    private List<Track> mDatas;
     private Toolbar toolbar;
     private OptionsPickerView tpview;
-    private ArrayList<Short> hourList;
-    private ArrayList<Short> minAndSecList;
+    private List<Short> hourList;
+    private List<Short> minAndSecList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -112,7 +112,7 @@ public class TodoEditorActivity extends AppCompatActivity
                                 if (taskItem.isLast && !msg.equals(getResources().getString(R.string.default_time)))
                                 {
                                     taskItem.isLast = false;
-                                    todoList.addNewTrack(mDatas);
+                                    //todoList.addNewTrack(mDatas);
                                     setLast(mDatas);
                                 }
                                 notifyDataSetChanged();
@@ -191,7 +191,7 @@ public class TodoEditorActivity extends AppCompatActivity
         {
             case R.id.action_play:
                 Intent i=new Intent(TodoEditorActivity.this,TimerActivity.class);
-                i.putExtra("todolist", todoList);
+                //i.putExtra("todolist", todoList);
                 startActivity(i);
                 return true;
             case android.R.id.home:
@@ -206,7 +206,7 @@ public class TodoEditorActivity extends AppCompatActivity
     private void initDatas() {
         todoList = getIntent().getParcelableExtra("todolist");
         setTitle(todoList.getName());
-        mDatas = todoList.getTracks();
+        //mDatas = todoList.getTracks();
         setLast(mDatas);
     }
 
