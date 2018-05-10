@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * 通用ListView/GridView Adapter
  * Created by zhangxutong .
@@ -20,6 +21,7 @@ public abstract class CommonAdapter<T> extends BaseAdapter
     protected List<T> mDatas;
     protected LayoutInflater mInflater;
     private int layoutId;
+
 
     public CommonAdapter(Context context, List<T> datas, int layoutId)
     {

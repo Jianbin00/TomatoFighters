@@ -20,7 +20,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/activity"
+            android:id="@+id/playListName"
             android:layout_width="@dimen/todo_editor_text_width"
             android:layout_height="@dimen/todo_editor_text_height"
             android:layout_weight="15"

@@ -4,7 +4,6 @@ package com.tomatofighters;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,12 +18,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
-import java.util.LinkedList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /*
 Author: Jianbin Li
@@ -34,15 +34,19 @@ This is the launcher activity.
  */
 public class PlayListActivity extends AppCompatActivity
 {
-    private final static String DEFAULT_DB_NAME = "data.db";
+    //private final static String DEFAULT_DB_NAME = "data.db";
+
+    private final static String SHAREDPREFERENCES_TAG = "mypreference";
+    InputMethodManager inputManager;
     private ListView mLv;
     private CommonAdapter mAdapter;
     private List<PlayList> mDatas;
-    //private LiveData<List<PlayList>> lDatas;
+    private PlayListDBHelper dbHelper;
     private Toolbar toolbar;
     private Intent i;
-    private AppDatabaseHelper dbHelper;
-    private AppDatabase db;
+    private int maxPlayListId = -1;
+//    private AppDatabaseHelper dbHelper;
+//    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,9 +54,15 @@ public class PlayListActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_list);
         toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
         mLv = findViewById(R.id.tasks);
+        doFirst();
+
+        dbHelper = new PlayListDBHelper();
         initDatas();
+
+
         mAdapter = new CommonAdapter<PlayList>(this, mDatas, R.layout.item_swipe_play_list)
         {
 
@@ -61,7 +71,7 @@ public class PlayListActivity extends AppCompatActivity
             public void convert(final ViewHolder holder, final PlayList playlist, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
-                holder.setText(R.id.activity, playlist.getName());
+                holder.setText(R.id.playListName, playlist.getName());
 
                 final GestureDetector gestureDetector = new GestureDetector(PlayListActivity.this, new GestureDetector.SimpleOnGestureListener()
                 {
@@ -70,7 +80,7 @@ public class PlayListActivity extends AppCompatActivity
                     {
 
                         i = new Intent(PlayListActivity.this, TodoEditorActivity.class);
-                        i.putExtra("playlistId", position);
+                        i.putExtra("playlistId", playlist.getId());
                         startActivity(i);
 
                         return super.onSingleTapConfirmed(e);
@@ -80,7 +90,7 @@ public class PlayListActivity extends AppCompatActivity
                     public boolean onDoubleTap(MotionEvent e)
                     {
                         final EditText inputText = new EditText(PlayListActivity.this);
-                        InputMethodManager inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputText.setMaxLines(1);
                         inputText.setSingleLine(true);
 
@@ -92,9 +102,12 @@ public class PlayListActivity extends AppCompatActivity
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
-                                        playlist.setName(inputText.getText().toString());
+                                        String name = inputText.getText().toString();
+                                        playlist.setName(name);
+                                        dbHelper.setPlayListName(playlist.getId(), name);
+                                        inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
                                         dialogInterface.dismiss();
-                                        dismissInputMethod(inputManager, inputText);
+                                        //dismissInputMethod(inputManager, inputText);
                                     }
                                 })
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
@@ -102,8 +115,9 @@ public class PlayListActivity extends AppCompatActivity
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
+                                        inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
                                         dialogInterface.dismiss();
-                                        dismissInputMethod(inputManager, inputText);
+                                        //dismissInputMethod(inputManager, inputText);
                                     }
                                 });
 
@@ -113,8 +127,8 @@ public class PlayListActivity extends AppCompatActivity
                         inputText.setText(playlist.getName());
                         inputText.selectAll();
                         //TODO:When click the view, the content of EditText is selected but no keyboard come out.
-                        popUpInputMethod(inputManager, inputText);
-
+                        //popUpInputMethod(inputManager, inputText);
+                        inputManager.showSoftInput(inputText, InputMethodManager.SHOW_FORCED);
 
 
                         return super.onDoubleTap(e);
@@ -123,7 +137,7 @@ public class PlayListActivity extends AppCompatActivity
 
                 });
 
-                holder.setOnTouchListener(R.id.activity, new View.OnTouchListener()
+                holder.setOnTouchListener(R.id.playListName, new View.OnTouchListener()
                 {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent)
@@ -138,9 +152,11 @@ public class PlayListActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v)
                     {
-                        Toast.makeText(PlayListActivity.this, "删除:" + position, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(PlayListActivity.this, "删除:" + position, Toast.LENGTH_SHORT).show();
                         ((SwipeMenuLayout) holder.getConvertView()).quickClose();
+                        dbHelper.deletePlayList(playlist.getId());
                         mDatas.remove(position);
+
                         notifyDataSetChanged();
                     }
                 });
@@ -148,18 +164,22 @@ public class PlayListActivity extends AppCompatActivity
 
 
         };
+
+
         mLv.setAdapter(mAdapter);
+
     }
 
     @Override
     public void onDestroy()
     {
         super.onDestroy();
-        if (db != null)
+        if (dbHelper != null)
         {
-            db.close();
+            dbHelper.close();
         }
     }
+
 
 
 
@@ -181,37 +201,61 @@ public class PlayListActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add)
         {
-            List<Track> newTracks = new LinkedList<>();
-            PlayList newplayList = new PlayList("TODO");
-            /*toBeAdded.add(newplayList);
-            mAdapter.addDatas(toBeAdded);*/
-
-            AsyncTask.execute(new Runnable()
+            if (maxPlayListId < 0)
             {
-                @Override
-                public void run()
-                {
-                    try
-                    {
-                        int playListId = (int) db.PlayListDAO().insertPlayList(newplayList);
-                        for (int i = 0; i < 5; i++)
-                        {
-                            newTracks.add(new Track(0, "TODO " + i, "00:00:00", playListId));
-
-                        }
-                        db.PlayListDAO().insertTracks(newTracks);
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-
-
+                maxPlayListId = dbHelper.findMaxPlayListId() + 1;
+            } else
+            {
+                maxPlayListId++;
+            }
+            mDatas.add(dbHelper.insertNewPlayListAndTracks(maxPlayListId));
+            mAdapter.notifyDataSetChanged();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void initRealm()
+    {
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("data.dbHelper")
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
+
+    }
+
+    public void initDatas()
+    {
+
+        mDatas = dbHelper.queryAllPlayLists();
+        Log.d("test", mDatas.toString());
+/*        mDatas.addChangeListener(new RealmChangeListener<RealmList<PlayList>>()
+        {
+            @Override
+            public void onChange(RealmList<PlayList> playLists)
+            {
+                if(mAdapter!=null)
+                {
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });*/
+
+    }
+
+    private void doFirst()
+    {
+/*        SharedPreferences settings=getSharedPreferences(SHAREDPREFERENCES_TAG,0);
+        if(settings.getBoolean("FIRST",true))
+        {
+            SharedPreferences.Editor editor=settings.edit();
+            editor.putBoolean("FIRST",false);
+            editor.apply();
+            initRealm();
+        }*/
+        initRealm();
     }
 
 
@@ -223,13 +267,13 @@ public class PlayListActivity extends AppCompatActivity
         mDatas.add(newTodoList);
     }*/
 
-    private void initDatas()
+   /* private void initDatas()
 
     {
         db = AppDatabase.getDatabase(getApplicationContext());
         dbHelper = new AppDatabaseHelper(db);
         mDatas = dbHelper.getPlayLists().getValue();
-        Log.d("Test", "" + (mDatas == null));
+        Log.d("Test", "" + (mDatas == null));*/
 
 
 
@@ -250,7 +294,6 @@ public class PlayListActivity extends AppCompatActivity
             Toast.makeText(this, getResources().getText(R.string.xml_read_error), Toast.LENGTH_SHORT).show();
         }*/
 
-    }
 
     private void popUpInputMethod(InputMethodManager im, EditText inputText)
     {

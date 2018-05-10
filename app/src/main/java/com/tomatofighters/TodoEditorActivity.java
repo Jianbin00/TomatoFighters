@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.bigkoo.pickerview.listener.CustomListener;
@@ -25,12 +26,16 @@ public class TodoEditorActivity extends AppCompatActivity
 {
     private static final short MAX_HOUR = 24;
     private ListView mLv;
-    private PlayList todoList;
+    private PlayList playList;
+    private int playListId;
     private List<Track> mDatas;
     private Toolbar toolbar;
     private OptionsPickerView tpview;
     private List<Short> hourList;
     private List<Short> minAndSecList;
+
+    private PlayListDBHelper dbHelper;
+    private int maxTrackId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,20 +55,19 @@ public class TodoEditorActivity extends AppCompatActivity
         mLv.setAdapter(new CommonAdapter<Track>(this, mDatas, R.layout.item_swipe_todo_editor)
         {
             @Override
-            public void convert(final ViewHolder holder, final Track taskItem, final int position)
+            public void convert(final ViewHolder holder, final Track trackItem, final int position)
             {
                 //((SwipeMenuLayout)holder.getConvertView()).setIos(false);//这句话关掉IOS阻塞式交互效果
-                holder.setText(R.id.activity, taskItem.getName());
-                holder.setText(R.id.time_setter, taskItem.getTime());
-                //TODO:bug:Dialog only come out after double click
-                holder.setOnClickListener(R.id.activity, new View.OnClickListener()
+                holder.setText(R.id.playListName, trackItem.getName());
+                holder.setText(R.id.time_setter, trackItem.getTime());
+                holder.setOnClickListener(R.id.playListName, new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View view)
                     {
                         final EditText inputText = new EditText(TodoEditorActivity.this);
 
-                        inputText.setText(taskItem.getName());
+                        inputText.setText(trackItem.getName());
                         inputText.setMaxLines(1);
                         inputText.selectAll();
                         final AlertDialog.Builder inputDialog = new AlertDialog.Builder(TodoEditorActivity.this);
@@ -75,7 +79,8 @@ public class TodoEditorActivity extends AppCompatActivity
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
                                         String newName = inputText.getText().toString();
-                                        taskItem.setName(newName);
+                                        trackItem.setName(newName);
+                                        dbHelper.setTrackName(trackItem.getId(), newName);
                                         dialogInterface.dismiss();
                                         notifyDataSetChanged();
                                     }
@@ -100,6 +105,7 @@ public class TodoEditorActivity extends AppCompatActivity
                     @Override
                     public void onClick(View view)
                     {
+                        int[] timeDigits = TimeConverter.timeStringToInts(trackItem.getTime());
                         //TODO:dialog need to adjust.
                         tpview=new OptionsPickerView.Builder(TodoEditorActivity.this,new OptionsPickerView.OnOptionsSelectListener()
                         {
@@ -108,11 +114,20 @@ public class TodoEditorActivity extends AppCompatActivity
                             {
 
                                 msg = String.format("%02d", option1) + ":" + String.format("%02d", option2) + ":" + String.format("%02d", option3);
-                                taskItem.setTime(msg);
-                                if (taskItem.isLast && !msg.equals(getResources().getString(R.string.default_time)))
+                                trackItem.setTime(msg);
+                                dbHelper.setTrackTime(trackItem.getId(), msg);
+                                if (trackItem.isLast && !msg.equals(getResources().getString(R.string.default_time)))
                                 {
-                                    taskItem.isLast = false;
-                                    //todoList.addNewTrack(mDatas);
+                                    if (maxTrackId < 0)
+                                    {
+                                        maxTrackId = dbHelper.findMaxTrackId() + 1;
+                                    } else
+                                    {
+                                        maxTrackId++;
+
+                                    }
+                                    mDatas.add(dbHelper.insertNewTrack(maxTrackId));
+                                    trackItem.isLast = false;
                                     setLast(mDatas);
                                 }
                                 notifyDataSetChanged();
@@ -142,16 +157,18 @@ public class TodoEditorActivity extends AppCompatActivity
                                 })
                                 .setTitleText(getResources().getString(R.string.select_time))
                                 .setLabels("Hour","Min","Sec")
-                                .setSelectOptions(0, 0, 0)
-                                .setContentTextSize(50)
+                                .isCenterLabel(false)
+                                .setSelectOptions(timeDigits[0], timeDigits[1], timeDigits[2])
+                                .setContentTextSize(30)
                                 .setDividerColor(Color.TRANSPARENT)
                                 .setBgColor(Color.WHITE)
                                 .setTitleBgColor(Color.DKGRAY)
                                 .setTitleColor(Color.LTGRAY)
-                                .setCancelColor(Color.YELLOW)
-                                .setSubmitColor(Color.YELLOW)
-                                .setTextColorCenter(Color.BLACK)
+                                //.setCancelColor(Color.YELLOW)
+                                //.setSubmitColor(Color.YELLOW)
+                                //.setTextColorCenter(Color.BLACK)
                                 .setCyclic(true, true, true)
+                                .setOutSideCancelable(true)
                                 .isDialog(true)
                                 .build();
                         tpview.setNPicker(hourList,minAndSecList,minAndSecList);
@@ -166,15 +183,38 @@ public class TodoEditorActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         ((SwipeMenuLayout) holder.getConvertView()).quickClose();
-                        mDatas.remove(position);
-                        setLast(mDatas);
-                        notifyDataSetChanged();
+
+                        if (mDatas.size() > 1)
+                        {
+                            dbHelper.deleteTrack(trackItem.getId());
+                            mDatas.remove(position);
+                            setLast(mDatas);
+                            notifyDataSetChanged();
+                        } else
+                        {
+                            Toast.makeText(TodoEditorActivity.this, "Can't delete it. At least one item should be in the scene.", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 });
             }
         });
         
     }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if (dbHelper != null)
+        {
+            dbHelper.close();
+        }
+    }
+
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_todo_editor, menu);
@@ -191,7 +231,7 @@ public class TodoEditorActivity extends AppCompatActivity
         {
             case R.id.action_play:
                 Intent i=new Intent(TodoEditorActivity.this,TimerActivity.class);
-                //i.putExtra("todolist", todoList);
+                i.putExtra("playListId", playListId);
                 startActivity(i);
                 return true;
             case android.R.id.home:
@@ -204,18 +244,28 @@ public class TodoEditorActivity extends AppCompatActivity
     }
 
     private void initDatas() {
-        todoList = getIntent().getParcelableExtra("todolist");
-        setTitle(todoList.getName());
-        //mDatas = todoList.getTracks();
+        playListId = getIntent().getIntExtra("playlistId", 0);
+        dbHelper = new PlayListDBHelper();
+        playList = dbHelper.queryPlayListById(playListId);
+        if (playList != null)
+
+        {
+            setTitle(playList.getName());
+            mDatas = dbHelper.queryTracksByPlayListId(playListId);
+        } else
+        {
+            Toast.makeText(this, "Can't find the ID.", Toast.LENGTH_SHORT).show();
+        }
+
         setLast(mDatas);
     }
 
-    private void setLast(List<Track> tasks)
+    private void setLast(List<Track> tracks)
     {
-        int dataNum = tasks.size();
+        int dataNum = tracks.size();
         if (dataNum > 0)
         {
-            tasks.get(dataNum - 1).isLast = true;
+            tracks.get(dataNum - 1).isLast = true;
         }
     }
 

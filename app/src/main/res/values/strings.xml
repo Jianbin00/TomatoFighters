@@ -14,4 +14,5 @@
     <string name="cancel">Cancel</string>
     <string name="xml_read_error">Cannot read the data.</string>
     <string name="database_name">playlistdata.db</string>
+    <string name="default_play_list_name">TODO</string>
 </resources>

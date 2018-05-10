@@ -22,9 +22,7 @@
             android:layout_marginLeft="17dp"
             android:padding="8dp"
             android:text="Cancel"
-            android:textAlignment="center"
-            android:textColor="#24AD9D"
-            android:textSize="@dimen/time_picker_font_size"/>
+            android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/tv_finish"
@@ -35,9 +33,7 @@
             android:layout_marginRight="17dp"
             android:padding="8dp"
             android:text="OK"
-            android:textAlignment="center"
-            android:textColor="#24AD9D"
-            android:textSize="@dimen/time_picker_font_size"/>
+            android:textAlignment="center"/>
 
         <View
             android:layout_width="match_parent"

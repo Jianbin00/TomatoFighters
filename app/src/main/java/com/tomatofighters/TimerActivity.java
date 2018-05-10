@@ -10,11 +10,15 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
 import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
 
 import java.util.List;
+
+import static com.tomatofighters.TimeConverter.millisToString;
+import static com.tomatofighters.TimeConverter.timeStringToLong;
 
 
 //import java.io.FileOutputStream;
@@ -30,13 +34,15 @@ public class TimerActivity extends AppCompatActivity
     private List<Track> mDatas;
     private Toolbar toolbar;
     private TextView remainTimeTV;
-    private PlayList todoList;
+    private PlayList playList;
     private ImageButton playButton;
     private CountDownTimer cdTimer;
     private long remainTime;
     private int hour, min, sec;
     private String timeShow;
     private boolean isPlay, isLast;
+    private int playListId;
+    private PlayListDBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -59,7 +65,7 @@ public class TimerActivity extends AppCompatActivity
             @Override
             public void convert(final ViewHolder holder, Track taskItem, final int position)
             {
-                holder.setText(R.id.activity, taskItem.getName());
+                holder.setText(R.id.playListName, taskItem.getName());
                 holder.setText(R.id.time_setter, taskItem.getTime());
             }
         };
@@ -86,9 +92,19 @@ public class TimerActivity extends AppCompatActivity
         });
         if (mDatas.size() > 0)
         {
-            remainTime = TimeStringToLong(mDatas.get(0).getTime());
+            remainTime = timeStringToLong(mDatas.get(0).getTime());
         }
 
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if (dbHelper != null)
+        {
+            dbHelper.close();
+        }
     }
 
 
@@ -100,14 +116,14 @@ public class TimerActivity extends AppCompatActivity
             public void onTick(long millisUntilFinished)
             {
                 remainTime = millisUntilFinished;
-                remainTimeTV.setText(timeShow(millisUntilFinished));
+                remainTimeTV.setText(millisToString(millisUntilFinished));
             }
 
             @Override
             public void onFinish()
             {
                 remainTime = 0;
-                remainTimeTV.setText(timeShow(remainTime));
+                remainTimeTV.setText(millisToString(remainTime));
                 if (mDatas.size() > 0)
                 {
                     if (mDatas.get(0).isLast)
@@ -119,7 +135,7 @@ public class TimerActivity extends AppCompatActivity
                         mDatas.remove(0);
                         mDatas.add(movedItem);
                         CAdapter.notifyDataSetChanged();
-                        remainTime = TimeStringToLong(mDatas.get(0).getTime());
+                        remainTime = timeStringToLong(mDatas.get(0).getTime());
                         initCountDownTimer(remainTime);
                         cdTimer.start();
                     }
@@ -127,31 +143,11 @@ public class TimerActivity extends AppCompatActivity
 
             }
 
-            private String timeShow(long millisUntilFinished)
-            {
-                //The format of remainTimeTV is "hh:mm:ss".
-                hour = (int) millisUntilFinished / 3600000;
-                min = (int) (millisUntilFinished % 3600000) / 60000;
-                sec = (int) (millisUntilFinished % 60000) / 1000;
-                return String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec);
 
-            }
         };
     }
 
-    public long TimeStringToLong(String timeString)
-    {
-        long time;
-        if (timeString.matches("\\d\\d:\\d\\d:\\d\\d"))
-        {
-            String[] digits = timeString.split(":");
-            time = Integer.parseInt(digits[0]) * 3600000 + Integer.parseInt(digits[1]) * 60000 + Integer.parseInt(digits[2]) * 1000;
-        } else
-        {
-            throw new IllegalArgumentException(timeString);
-        }
-        return time;
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -186,18 +182,29 @@ public class TimerActivity extends AppCompatActivity
 
     private void initDatas()
     {
-        todoList = getIntent().getParcelableExtra("todolist");
-        setTitle(todoList.getName());
-        //mDatas = todoList.getTracks();
-        int mDatasNum = mDatas.size();
-        for (int i = mDatasNum - 1; i >= 0; i--)
+        playListId = getIntent().getIntExtra("playlistId", 0);
+        dbHelper = new PlayListDBHelper();
+        playList = dbHelper.queryPlayListById(playListId);
+        if (playList != null)
+
         {
-            if (mDatas.get(i).getTime().equals("00:00:00"))
+            setTitle(playList.getName());
+            mDatas = dbHelper.queryTracksByPlayListId(playListId);
+            int mDatasNum = mDatas.size();
+            for (int i = mDatasNum - 1; i >= 0; i--)
             {
-                mDatas.remove(i);
+                if (mDatas.get(i).getTime().equals("00:00:00"))
+                {
+                    mDatas.remove(i);
+                }
             }
+            setLast(mDatas);
+        } else
+        {
+            Toast.makeText(this, "Can't find the ID.", Toast.LENGTH_SHORT).show();
         }
-        setLast(mDatas);
+
+
     }
 
     private void setLast(List<Track> tasks)

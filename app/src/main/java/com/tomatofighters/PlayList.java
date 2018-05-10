@@ -1,11 +1,9 @@
 package com.tomatofighters;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.PrimaryKey;
 
-import java.util.List;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Jianbin Li
@@ -13,56 +11,37 @@ import java.util.List;
  * Date:4/18/2018
  */
 
-@Entity
-public class PlayList //implements Parcelable
+
+public class PlayList extends RealmObject
 {
 
 
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo
+    @PrimaryKey
     private int id;
-    @ColumnInfo
     private String name;
-    @Ignore
-    private List<Track> tracks;
 
+    private RealmList<Track> tracks;
 
-    /*
-        public static final Creator<PlayList> CREATOR = new Creator<PlayList>()
-        {
-            @Override
-            public PlayList createFromParcel(Parcel source)
-            {
-                PlayList playList = new PlayList(source.readString());
-                //playList.tracks = source.createTypedArrayList(Track.CREATOR);
-                return playList;
-            }
-
-            @Override
-            public PlayList[] newArray(int size)
-            {
-                return new PlayList[size];
-            }
-        };
-    */
-    @Ignore
     public PlayList()
     {
     }
 
-    @Ignore
+
     public PlayList(String name)
     {
         this.name = name;
-//        this.tracks = new ArrayList<>();
-//        addNewTasks(tracks, 5);
     }
 
-    public PlayList(final int id, String name)
+    public PlayList(String name, RealmList<Track> tracks)
+    {
+        this.name = name;
+        this.tracks = tracks;
+    }
+
+    public PlayList(int id, String name, RealmList<Track> tracks)
     {
         this.id = id;
         this.name = name;
-//        this.tracks = tracks;
     }
 
     public int getId()
@@ -85,43 +64,15 @@ public class PlayList //implements Parcelable
         this.name = name;
     }
 
-    public List<Track> getTracks()
+    public RealmList<Track> getTracks()
     {
         return tracks;
     }
 
-    public void setTracks(List<Track> tracks)
+    public void setTracks(RealmList<Track> tracks)
     {
         this.tracks = tracks;
     }
-
-//    public void addNewTasks(ArrayList<Track> tasks, int numberOfTasks)
-//    {
-//        Track newTask;
-//        for (int i = 0; i < numberOfTasks; i++)
-//        {
-//            newTask = new Track("Task" + i);
-//            tasks.add(newTask);
-//        }
-//    }
-//
-//    public void addNewTrack(ArrayList<Track> tracks)
-//    {
-//        tracks.add(new Track("NewTask"));
-//    }
-
-/*    @Override
-    public int describeContents()
-    {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
-        dest.writeString(name);
-        //dest.writeTypedList(tracks);
-    }*/
 
 
 }
