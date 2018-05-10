@@ -11,6 +11,7 @@ import io.realm.RealmResults;
  * Jianbin Li
  * PlayListDBHelper.java
  * It contains functions that use Realm to read and save data.
+ * TODO:when track id and playList id reach max int, new record will be not available.
  */
 
 public class PlayListDBHelper
