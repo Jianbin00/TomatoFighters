@@ -48,7 +48,7 @@ public class TodoEditorActivity extends AppCompatActivity
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mLv = findViewById(R.id.tasks);
+        mLv = findViewById(R.id.playLists);
 
         initDatas();
         initOptions();

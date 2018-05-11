@@ -10,8 +10,8 @@
     tools:showIn="@layout/activity_play_list">
 
 
-    <ListView
-        android:id="@+id/tasks"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/playLists"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

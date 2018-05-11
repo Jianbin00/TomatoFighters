@@ -7,21 +7,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.GestureDetector;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ListView;
-
-import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
-
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -34,19 +29,18 @@ This is the launcher activity.
  */
 public class PlayListActivity extends AppCompatActivity
 {
-    //private final static String DEFAULT_DB_NAME = "data.db";
+
 
     private final static String SHAREDPREFERENCES_TAG = "mypreference";
     InputMethodManager inputManager;
-    private ListView mLv;
-    private CommonAdapter mAdapter;
-    private List<PlayList> mDatas;
+    /*    private ListView mLv;
+        private CommonAdapter mAdapter;
+        private List<PlayList> mDatas;*/
+    private PlayListViewAdapter adapter;
     private PlayListDBHelper dbHelper;
     private Toolbar toolbar;
     private Intent i;
     private int maxPlayListId = -1;
-//    private AppDatabaseHelper dbHelper;
-//    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -56,14 +50,87 @@ public class PlayListActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
-        mLv = findViewById(R.id.tasks);
+        //mLv = findViewById(R.id.playLists);
         doFirst();
-
+        adapter = new PlayListViewAdapter();
         dbHelper = new PlayListDBHelper();
         initDatas();
+        RecyclerView mRecyclerView = findViewById(R.id.playLists);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.addItemDecoration(new MyItemDecoration(this, MyItemDecoration.VERTICAL_LIST));
+
+        mRecyclerView.addOnItemTouchListener(new OnItemClickListener(mRecyclerView)
+        {
+            @Override
+            public void onItemClick(RecyclerView.ViewHolder viewHolder, int position)
+            {
+                i = new Intent(PlayListActivity.this, TodoEditorActivity.class);
+                i.putExtra("playlistId", adapter.getDataList().get(position).getId());
+                startActivity(i);
+            }
+
+            @Override
+            public void onItemLongClick(RecyclerView.ViewHolder viewHolder, int position)
+            {
+
+            }
+
+            @Override
+            public void onItemDoubleClick(RecyclerView.ViewHolder viewHolder, int position)
+            {
+                final EditText inputText = new EditText(PlayListActivity.this);
+                inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputText.setMaxLines(1);
+                inputText.setSingleLine(true);
+                PlayList playList = adapter.getDataList().get(position);
+
+                final AlertDialog.Builder inputDialog = new AlertDialog.Builder(PlayListActivity.this);
+                inputDialog.setTitle(R.string.rename)
+                        .setView(inputText)
+                        .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                String name = inputText.getText().toString();
+
+                                playList.setName(name);
+                                dbHelper.setPlayListName(playList.getId(), name);
+                                inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
+                                dialogInterface.dismiss();
+                                //dismissInputMethod(inputManager, inputText);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
+                                dialogInterface.dismiss();
+                                //dismissInputMethod(inputManager, inputText);
+                            }
+                        });
 
 
-        mAdapter = new CommonAdapter<PlayList>(this, mDatas, R.layout.item_swipe_play_list)
+                inputText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                inputDialog.show();
+                inputText.setText(playList.getName());
+                inputText.selectAll();
+                //TODO:When click the view, the content of EditText is selected but no keyboard come out.
+                //popUpInputMethod(inputManager, inputText);
+                inputManager.showSoftInput(inputText, InputMethodManager.SHOW_FORCED);
+
+
+            }
+        });
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelperCallback(adapter));
+        helper.attachToRecyclerView(mRecyclerView);
+        mRecyclerView.setAdapter(adapter);
+
+
+        /*mAdapter = new CommonAdapter<PlayList>(this, mDatas, R.layout.item_swipe_play_list)
         {
 
 
@@ -166,7 +233,7 @@ public class PlayListActivity extends AppCompatActivity
         };
 
 
-        mLv.setAdapter(mAdapter);
+        mLv.setAdapter(mAdapter);*/
 
     }
 
@@ -208,8 +275,8 @@ public class PlayListActivity extends AppCompatActivity
             {
                 maxPlayListId++;
             }
-            mDatas.add(dbHelper.insertNewPlayListAndTracks(maxPlayListId));
-            mAdapter.notifyDataSetChanged();
+            adapter.getDataList().add(dbHelper.insertNewPlayListAndTracks(maxPlayListId));
+            //mAdapter.notifyDataSetChanged();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -229,8 +296,7 @@ public class PlayListActivity extends AppCompatActivity
     public void initDatas()
     {
 
-        mDatas = dbHelper.queryAllPlayLists();
-        Log.d("test", mDatas.toString());
+        adapter.setDataList(dbHelper.queryAllPlayLists());
 /*        mDatas.addChangeListener(new RealmChangeListener<RealmList<PlayList>>()
         {
             @Override

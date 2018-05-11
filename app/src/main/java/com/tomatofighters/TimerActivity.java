@@ -56,7 +56,7 @@ public class TimerActivity extends AppCompatActivity
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mLv = findViewById(R.id.tasks);
+        mLv = findViewById(R.id.playLists);
         remainTimeTV = findViewById(R.id.remain_time);
         initDatas();
 

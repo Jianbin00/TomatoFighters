@@ -46,8 +46,7 @@ dependencies {
     implementation 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:design:27.1.1'
-
-
+    implementation 'com.contrarywind:Android-PickerView:3.2.4'
     implementation 'io.realm:android-adapters:2.1.1'
 
     testImplementation 'junit:junit:4.12'
