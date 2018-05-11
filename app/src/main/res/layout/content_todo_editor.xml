@@ -10,7 +10,7 @@
     tools:showIn="@layout/activity_todo_editor">
 
     <ListView
-        android:id="@+id/playLists"
+        android:id="@+id/tasks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

@@ -56,7 +56,7 @@ public class TimerActivity extends AppCompatActivity
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mLv = findViewById(R.id.playLists);
+        mLv = findViewById(R.id.tasks);
         remainTimeTV = findViewById(R.id.remain_time);
         initDatas();
 
@@ -182,7 +182,7 @@ public class TimerActivity extends AppCompatActivity
 
     private void initDatas()
     {
-        playListId = getIntent().getIntExtra("playlistId", 0);
+        playListId = getIntent().getIntExtra("playListId", 0);
         dbHelper = new PlayListDBHelper();
         playList = dbHelper.queryPlayListById(playListId);
         if (playList != null)
