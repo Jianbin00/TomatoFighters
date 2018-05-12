@@ -175,6 +175,7 @@ public class PlayListActivity extends AppCompatActivity
                 maxPlayListId++;
             }
             adapter.getDataList().add(dbHelper.insertNewPlayListAndTracks(maxPlayListId));
+            adapter.notifyDataSetChanged();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -195,6 +196,7 @@ public class PlayListActivity extends AppCompatActivity
     {
         dbHelper = new PlayListDBHelper();
         adapter.setDataList(dbHelper.queryAllPlayLists());
+
 /*        mDatas.addChangeListener(new RealmChangeListener<RealmList<PlayList>>()
         {
             @Override
