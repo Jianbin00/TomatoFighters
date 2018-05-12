@@ -22,7 +22,10 @@ android {
         }
     }
     sourceSets {
-        main { res.srcDirs = ['src/main/res', 'src/main/res/layout', 'src/main/res/raw'] }
+        main {
+            res.srcDirs = ['src/main/res', 'src/main/res/layout', 'src/main/res/raw']
+            java.srcDirs = ['src/main/java', 'src/main/java/Models']
+        }
         test.resources.srcDirs += 'src/test/resources'
     }
     compileOptions {
@@ -38,12 +41,6 @@ dependencies {
 
 
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    api('com.github.mcxtzhang:all-base-adapter:V1.8.0')
-            {
-                exclude group: 'com.android.support', module: 'recyclerview-v7'
-            }
-
-    implementation 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.contrarywind:Android-PickerView:3.2.4'

@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TodoEditorActivity"
+            android:name=".TrackActivity"
             android:label="@string/title_activity_todo_editor"
             android:parentActivityName="PlayListActivity">
             <meta-data
@@ -29,10 +29,10 @@
         <activity
             android:name=".TimerActivity"
             android:label="TimerActivity"
-            android:parentActivityName="TodoEditorActivity">
+            android:parentActivityName=".TrackActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.tomatofighters.TodoEditorActivity"/>
+                android:value="com.tomatofighters.TrackActivity"/>
         </activity>
     </application>
 

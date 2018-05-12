@@ -1,5 +1,8 @@
-package com.tomatofighters;
+package com.tomatofighters.DB;
 
+
+import com.tomatofighters.Models.PlayList;
+import com.tomatofighters.Models.Track;
 
 import java.util.List;
 
@@ -170,7 +173,7 @@ public class PlayListDBHelper
         return -1;
     }
 
-    public Track insertNewTrack(int playListId)
+    public Track insertNewTrack(int trackId, int playListId)
     {
         Track track = new Track(findMaxTrackId() + 1, playListId, "NEW");
         realm.beginTransaction();
@@ -192,6 +195,57 @@ public class PlayListDBHelper
 
     }
 
+    public void swapTrack(int playListId, int fromIndex, int toIndex)
+    {
+        RealmResults<Track> tracks = realm.where(Track.class).equalTo("playListId", playListId).findAll();
+        if (fromIndex >= tracks.size())
+        {
+            throw new IndexOutOfBoundsException("fromIndex is out of bound.");
+        }
+        if (toIndex >= tracks.size())
+        {
+            throw new IndexOutOfBoundsException("toIndex is out of bound.");
+        }
+
+        int temp = tracks.get(fromIndex).getId();
+        if (fromIndex < toIndex)
+        {
+
+            for (int i = fromIndex; i < toIndex; i++)
+            {
+                temp = tracks.get(i + 1).getId();
+                tracks.get(i + 1).setId(tracks.get(i).getId());
+            }
+        } else
+        {
+            for (int i = fromIndex; i > toIndex; i--)
+            {
+                temp = tracks.get(i - 1).getId();
+                tracks.get(i - 1).setId(tracks.get(i).getId());
+            }
+
+        }
+        tracks.get(fromIndex).setId(temp);
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(tracks);
+        realm.commitTransaction();
+
+    }
+
+
+
+
+/*        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(adapter.getDataList(), i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(adapter.getDataList(), i, i - 1);
+            }
+        }*/
+
+
     public void close()
     {
         realm.close();
@@ -201,6 +255,11 @@ public class PlayListDBHelper
     public enum TrackAttr
     {
         name, time
+    }
+
+    public enum TableType
+    {
+        PLAYLIST, TRACK
     }
 
 

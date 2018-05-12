@@ -1,4 +1,4 @@
-package com.tomatofighters;
+package com.tomatofighters.Models;
 
 
 import io.realm.RealmList;

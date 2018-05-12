@@ -1,10 +1,10 @@
-package com.tomatofighters;
+package com.tomatofighters.Models;
 
 
 import com.bigkoo.pickerview.model.IPickerViewData;
 
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Index;
 
 /**
  * Jianbin Li
@@ -17,11 +17,12 @@ import io.realm.annotations.PrimaryKey;
 public class Track extends RealmObject implements IPickerViewData
 {
     public boolean isLast;
-    @PrimaryKey
+    @Index
     private int id;
     private int playListId;
     private String name;
     private String time;
+    private int order;
 
 
     public Track()
@@ -89,6 +90,16 @@ public class Track extends RealmObject implements IPickerViewData
     public void setTime(String time)
     {
         this.time = time;
+    }
+
+    public int getOrder()
+    {
+        return order;
+    }
+
+    public void setOrder(int order)
+    {
+        this.order = order;
     }
 
     @Override

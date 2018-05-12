@@ -3,17 +3,22 @@ package com.tomatofighters;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mcxtzhang.commonadapter.lvgv.CommonAdapter;
-import com.mcxtzhang.commonadapter.lvgv.ViewHolder;
+import com.tomatofighters.Controllers.MyItemDecoration;
+import com.tomatofighters.DB.PlayListDBHelper;
+import com.tomatofighters.Models.PlayList;
+import com.tomatofighters.Models.Track;
+import com.tomatofighters.Views.TimerViewAdapter;
 
 import java.util.List;
 
@@ -28,10 +33,8 @@ public class TimerActivity extends AppCompatActivity
 {
 
     private final long TIMER_INTERVAL = 1000;
-    //FileOutputStream out;
-    private ListView mLv;
-    private CommonAdapter<Track> CAdapter;
     private List<Track> mDatas;
+
     private Toolbar toolbar;
     private TextView remainTimeTV;
     private PlayList playList;
@@ -43,6 +46,7 @@ public class TimerActivity extends AppCompatActivity
     private boolean isPlay, isLast;
     private int playListId;
     private PlayListDBHelper dbHelper;
+    private TimerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -56,20 +60,24 @@ public class TimerActivity extends AppCompatActivity
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mLv = findViewById(R.id.playLists);
         remainTimeTV = findViewById(R.id.remain_time);
-        initDatas();
 
-        CAdapter = new CommonAdapter<Track>(this, mDatas, R.layout.item_swipe_timer)
+        adapter = new TimerViewAdapter();
+        mDatas = adapter.getDataList();
+        initDatas();
+        if (!mDatas.isEmpty())
         {
-            @Override
-            public void convert(final ViewHolder holder, Track taskItem, final int position)
-            {
-                holder.setText(R.id.playListName, taskItem.getName());
-                holder.setText(R.id.time_setter, taskItem.getTime());
-            }
-        };
-        mLv.setAdapter(CAdapter);
+            remainTimeTV.setText(mDatas.get(0).getTime());
+        }
+        RecyclerView mRecyclerView = findViewById(R.id.tracks);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.addItemDecoration(new MyItemDecoration(this, MyItemDecoration.VERTICAL_LIST));
+
+
+        /*ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelperCallback(adapter));
+        helper.attachToRecyclerView(mRecyclerView);*/
+        mRecyclerView.setAdapter(adapter);
         playButton = findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener()
         {
@@ -123,7 +131,7 @@ public class TimerActivity extends AppCompatActivity
             public void onFinish()
             {
                 remainTime = 0;
-                remainTimeTV.setText(millisToString(remainTime));
+
                 if (mDatas.size() > 0)
                 {
                     if (mDatas.get(0).isLast)
@@ -134,7 +142,7 @@ public class TimerActivity extends AppCompatActivity
                         Track movedItem = mDatas.get(0);
                         mDatas.remove(0);
                         mDatas.add(movedItem);
-                        CAdapter.notifyDataSetChanged();
+                        remainTimeTV.setText(mDatas.get(0).getTime());
                         remainTime = timeStringToLong(mDatas.get(0).getTime());
                         initCountDownTimer(remainTime);
                         cdTimer.start();
@@ -182,16 +190,17 @@ public class TimerActivity extends AppCompatActivity
 
     private void initDatas()
     {
-        playListId = getIntent().getIntExtra("playlistId", 0);
+        playListId = getIntent().getIntExtra("playListId", 0);
         dbHelper = new PlayListDBHelper();
         playList = dbHelper.queryPlayListById(playListId);
         if (playList != null)
 
         {
             setTitle(playList.getName());
-            mDatas = dbHelper.queryTracksByPlayListId(playListId);
-            int mDatasNum = mDatas.size();
-            for (int i = mDatasNum - 1; i >= 0; i--)
+            adapter.setDataList(dbHelper.queryTracksByPlayListId(playListId));
+            int dataNum = adapter.getItemCount();
+            mDatas = adapter.getDataList();
+            for (int i = dataNum - 1; i >= 0; i--)
             {
                 if (mDatas.get(i).getTime().equals("00:00:00"))
                 {
@@ -203,7 +212,6 @@ public class TimerActivity extends AppCompatActivity
         {
             Toast.makeText(this, "Can't find the ID.", Toast.LENGTH_SHORT).show();
         }
-
 
     }
 
