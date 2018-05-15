@@ -39,7 +39,7 @@ public class PlayListActivity extends AppCompatActivity
 
 
     private final static String SHAREDPREFERENCES_TAG = "mypreference";
-    InputMethodManager inputManager;
+    private InputMethodManager inputManager;
     private PlayListViewAdapter adapter;
     private PlayListDBHelper dbHelper;
     private Toolbar toolbar;
@@ -52,8 +52,8 @@ public class PlayListActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_list);
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
+
         //doFirst();
         initRealm();
         adapter = new PlayListViewAdapter();
@@ -71,6 +71,7 @@ public class PlayListActivity extends AppCompatActivity
             {
                 i = new Intent(PlayListActivity.this, TrackActivity.class);
                 i.putExtra("playlistId", adapter.getDataList().get(position).getId());
+                i.putExtra("color", adapter.getViewHolderColor(position));
                 startActivity(i);
             }
 
@@ -104,6 +105,8 @@ public class PlayListActivity extends AppCompatActivity
                                 dbHelper.setPlayListName(playList.getId(), name);
                                 inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
                                 dialogInterface.dismiss();
+                                //adapter.notifyDataSetChanged();
+                                adapter.notifyItemChanged(position);
                                 //dismissInputMethod(inputManager, inputText);
                             }
                         })
@@ -175,7 +178,8 @@ public class PlayListActivity extends AppCompatActivity
                 maxPlayListId++;
             }
             adapter.getDataList().add(dbHelper.insertNewPlayListAndTracks(maxPlayListId));
-            adapter.notifyDataSetChanged();
+            //adapter.notifyDataSetChanged();
+            adapter.notifyItemInserted(adapter.getItemCount());
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -183,7 +187,7 @@ public class PlayListActivity extends AppCompatActivity
 
     public void initRealm()
     {
-        Realm.init(this);
+        Realm.init(getApplicationContext());
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("data.dbHelper")
                 .deleteRealmIfMigrationNeeded()
@@ -197,17 +201,6 @@ public class PlayListActivity extends AppCompatActivity
         dbHelper = new PlayListDBHelper();
         adapter.setDataList(dbHelper.queryAllPlayLists());
 
-/*        mDatas.addChangeListener(new RealmChangeListener<RealmList<PlayList>>()
-        {
-            @Override
-            public void onChange(RealmList<PlayList> playLists)
-            {
-                if(mAdapter!=null)
-                {
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-        });*/
 
     }
 

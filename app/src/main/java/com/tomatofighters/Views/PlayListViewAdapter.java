@@ -1,5 +1,6 @@
 package com.tomatofighters.Views;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,9 @@ public class PlayListViewAdapter extends RecyclerViewAdapter
 {
 
     private List<PlayList> dataList = new ArrayList<>();
+    private String[] colors = {"#D09AE7", "#FD9927", "#6ACA6B", "#6BCDFD", "#FD9BCB"};
+    private String color;
+
 
     @Override
     public List<PlayList> getDataList()
@@ -41,6 +45,8 @@ public class PlayListViewAdapter extends RecyclerViewAdapter
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
         ((MyViewHolder) holder).tv.setText(dataList.get(position).getName());
+        color = colors[position % colors.length];
+        ((MyViewHolder) holder).mainView.setBackgroundColor(Color.parseColor(color));
     }
 
     @Override
@@ -57,12 +63,19 @@ public class PlayListViewAdapter extends RecyclerViewAdapter
         dbHelper.close();
     }
 
+    public String getViewHolderColor(int position)
+    {
+
+        return color;
+    }
+
 
     private static class MyViewHolder extends RecyclerView.ViewHolder
     {
 
         TextView tv;
         RelativeLayout mainView;
+        //String color;
 
         MyViewHolder(View itemView)
         {
@@ -70,6 +83,8 @@ public class PlayListViewAdapter extends RecyclerViewAdapter
             tv = itemView.findViewById(R.id.playListName);
             mainView = itemView.findViewById(R.id.playListItem);
         }
+
+
     }
 
 }

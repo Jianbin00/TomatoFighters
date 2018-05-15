@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="playlistColor">
+        <item>#D09AE7</item>
+        <item>#FD9927</item>
+        <item>#6ACA6B</item>
+        <item>#6BCDFD</item>
+        <item>#FD9BCB</item>
+    </string-array>
+</resources>

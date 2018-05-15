@@ -1,6 +1,7 @@
 package com.tomatofighters.Controllers;
 
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.tomatofighters.DB.PlayListDBHelper;
 import com.tomatofighters.Views.TrackViewAdapter;
@@ -31,6 +32,7 @@ public class TrackItemTouchHelperCallback extends ItemTouchHelperCallback
     {
         int fromPosition = viewHolder.getAdapterPosition();
         int toPosition = target.getAdapterPosition();
+        adapter.getDataList().get(fromPosition).isLast = false;
         if (fromPosition < toPosition)
         {
             for (int i = fromPosition; i < toPosition; i++)
@@ -44,9 +46,26 @@ public class TrackItemTouchHelperCallback extends ItemTouchHelperCallback
                 Collections.swap(adapter.getDataList(), i, i - 1);
             }
         }
-        recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
+
+        adapter.notifyItemMoved(fromPosition, toPosition);
+        adapter.setLast();
         PlayListDBHelper dbHelper = new PlayListDBHelper();
         dbHelper.swapTrack(playListId, fromPosition, toPosition);
+
         return true;
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction)
+    {
+        int position = viewHolder.getAdapterPosition();
+        if (direction == ItemTouchHelper.START)
+        {
+
+            adapter.removeItem(position);
+            adapter.getDataList().remove(position);
+            adapter.notifyItemRemoved(position);
+            adapter.setLast();
+        }
     }
 }

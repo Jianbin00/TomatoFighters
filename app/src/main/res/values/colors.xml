@@ -5,4 +5,11 @@
     <color name="colorAccent">#FF4081</color>
     <color name="textColorPrimary">#689ACA</color>
     <color name="red">#ff4a57</color>
+    <color name="purple">#D09AE7</color>
+    <color name="orange">#FD9927</color>
+    <color name="green">#6ACA6B</color>
+    <color name="blue">#6BCDFD</color>
+    <color name="pink">#FD9BCB</color>
+    <color name="white">#FFFFFF</color>
+
 </resources>

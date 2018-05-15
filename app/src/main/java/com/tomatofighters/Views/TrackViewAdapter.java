@@ -35,7 +35,7 @@ public class TrackViewAdapter extends RecyclerViewAdapter
     private List<Track> dataList = new ArrayList<>();
     private PlayListDBHelper dbHelper;
     private OptionsPickerView tpview;
-    private int maxTrackId = -1;
+
     private List<Short> hourList;
     private List<Short> minAndSecList;
 
@@ -84,10 +84,11 @@ public class TrackViewAdapter extends RecyclerViewAdapter
                                 String newName = inputText.getText().toString();
                                 data.setName(newName);
                                 dbHelper = new PlayListDBHelper();
-                                dbHelper.setTrackName(data.getId(), newName);
+                                dbHelper.setTrackName(data.getId(), data.getPlayListId(), newName);
                                 dbHelper.close();
                                 dialogInterface.dismiss();
-                                notifyDataSetChanged();
+                                //notifyDataSetChanged();
+                                notifyItemChanged(position);
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
@@ -120,23 +121,16 @@ public class TrackViewAdapter extends RecyclerViewAdapter
                         msg = TimeConverter.timeToString(option1, option2, option3);
                         data.setTime(msg);
                         dbHelper = new PlayListDBHelper();
-                        dbHelper.setTrackTime(data.getId(), msg);
+                        dbHelper.setTrackTime(data.getId(), data.getPlayListId(), msg);
                         if (data.isLast && !msg.equals(DEFAULT_TIME))
                         {
-                            if (maxTrackId < 0)
-                            {
-                                maxTrackId = dbHelper.findMaxTrackId() + 1;
-                            } else
-                            {
-                                maxTrackId++;
-
-                            }
-                            dataList.add(dbHelper.insertNewTrack(maxTrackId, data.getPlayListId()));
+                            dataList.add(dbHelper.insertNewTrack(data.getPlayListId()));
                             data.isLast = false;
                             setLast(dataList);
                         }
                         dbHelper.close();
-                        notifyDataSetChanged();
+                        //notifyDataSetChanged();
+                        notifyItemChanged(position);
                     }
                 })
                         .setLayoutRes(R.layout.pickerview_custom_options, new CustomListener()
@@ -198,7 +192,7 @@ public class TrackViewAdapter extends RecyclerViewAdapter
     public void removeItem(int position)
     {
         PlayListDBHelper dbHelper = new PlayListDBHelper();
-        dbHelper.deleteTrack(dataList.get(position).getId());
+        dbHelper.deleteTrack(dataList.get(position).getId(), dataList.get(position).getPlayListId());
         dbHelper.close();
     }
 
@@ -211,6 +205,11 @@ public class TrackViewAdapter extends RecyclerViewAdapter
             tracks.get(dataNum - 1).isLast = true;
         }
         return tracks;
+    }
+
+    public void setLast()
+    {
+        setLast(dataList);
     }
 
     private void initOptions()
@@ -231,8 +230,8 @@ public class TrackViewAdapter extends RecyclerViewAdapter
     private static class MyViewHolder extends RecyclerView.ViewHolder
     {
 
-        EditText nameView;
-        EditText timeView;
+        TextView nameView;
+        TextView timeView;
         RelativeLayout mainView;
 
         MyViewHolder(View itemView)

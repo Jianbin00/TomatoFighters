@@ -6,8 +6,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.tomatofighters.Views.RecyclerViewAdapter;
 
-import java.util.Collections;
-
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback
 {
 
@@ -41,7 +39,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                           RecyclerView.ViewHolder target)
     {
-        int fromPosition = viewHolder.getAdapterPosition();
+        return false;
+/*        int fromPosition = viewHolder.getAdapterPosition();
         int toPosition = target.getAdapterPosition();
         if (fromPosition < toPosition)
         {
@@ -57,7 +56,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback
             }
         }
         recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
-        return true;
+        return true;*/
     }
 
     @Override

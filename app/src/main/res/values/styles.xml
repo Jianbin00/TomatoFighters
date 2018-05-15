@@ -10,7 +10,8 @@
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:textSize">@dimen/font_size</item>
         <item name="android:textStyle">bold</item>
-
+        <item name="android:fontFamily">@font/san_francisco_bold</item>
+        <item name="android:listDivider">@drawable/playlist_divider</item>
     </style>
 
 

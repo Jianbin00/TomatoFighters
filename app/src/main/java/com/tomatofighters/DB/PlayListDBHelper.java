@@ -43,6 +43,7 @@ public class PlayListDBHelper
         //return playLists;
     }
 
+
     public PlayList queryPlayListById(int playListId)
     {
 
@@ -52,25 +53,21 @@ public class PlayListDBHelper
 
     public List<Track> queryTracksByPlayListId(int playListId)
     {
-/*        PlayList playList=realm.where(PlayList.class).equalTo("id",playListId).findFirst();
-        if(playList!=null)
-        {
-            return playList.getTracks();
-        }
-        return null;*/
-        RealmResults<Track> tracks = realm.where(Track.class).equalTo("playListId", playListId).findAll();
-        return realm.copyFromRealm(tracks);
+        return realm.copyFromRealm(queryTracksByPlayListIdRaw(playListId));
+    }
+
+    private RealmResults<Track> queryTracksByPlayListIdRaw(int playListId)
+    {
+        return realm.where(Track.class).equalTo("playListId", playListId).sort("id").findAll();
     }
 
 
     public PlayList insertNewPlayListAndTracks(int playListId)
     {
         RealmList<Track> tracks = new RealmList<>();
-        int maxTrackId = findMaxTrackId();
         for (int i = 0; i < DEFAULT_NUM_OF_TRACK_IN_PLAYLIST; i++)
         {
-            maxTrackId++;
-            Track track = new Track(maxTrackId, playListId, PRE_TRACK_NAME + i);
+            Track track = new Track(i, playListId, PRE_TRACK_NAME + i);
             tracks.add(track);
         }
         PlayList playList = new PlayList(playListId, DEFAULT_PLAY_LIST_NAME, tracks);
@@ -100,10 +97,12 @@ public class PlayListDBHelper
     {
 
         PlayList playList = queryPlayListById(playListId);
+        RealmResults<Track> tracks = queryTracksByPlayListIdRaw(playListId);
         if (playList != null)
         {
             realm.beginTransaction();
             playList.deleteFromRealm();
+            tracks.deleteAllFromRealm();
             realm.commitTransaction();
         }
 
@@ -120,29 +119,29 @@ public class PlayListDBHelper
         return -1;
     }
 
-    public Track queryTrackById(int trackId)
+    public Track queryTrackById(int trackId, int playListId)
     {
 
-        return realm.where(Track.class).equalTo("id", trackId).findFirst();
+        return realm.where(Track.class).equalTo("id", trackId).and().equalTo("playListId", playListId).findFirst();
     }
 
 
-    public void setTrackName(int trackId, String name)
+    public void setTrackName(int trackId, int playListId, String name)
     {
-        setTrackAttr(trackId, TrackAttr.name, name);
+        setTrackAttr(trackId, playListId, TrackAttr.name, name);
     }
 
-    public void setTrackTime(int trackId, String time)
+    public void setTrackTime(int trackId, int playListId, String time)
     {
-        setTrackAttr(trackId, TrackAttr.time, time);
+        setTrackAttr(trackId, playListId, TrackAttr.time, time);
     }
 
 
-    private void setTrackAttr(int trackId, TrackAttr attr, String value)
+    private void setTrackAttr(int trackId, int playListId, TrackAttr attr, String value)
     {
 
 
-        Track track = queryTrackById(trackId);
+        Track track = queryTrackById(trackId, playListId);
 
         if (track != null)
         {
@@ -163,33 +162,35 @@ public class PlayListDBHelper
 
     }
 
-    public int findMaxTrackId()
+    public int getTracksNum(int playListId)
     {
-        Number num = realm.where(Track.class).max("id");
-        if (num != null)
-        {
-            return num.intValue();
-        }
-        return -1;
+        return (int) realm.where(Track.class).equalTo("playListId", playListId).count();
+
     }
 
-    public Track insertNewTrack(int trackId, int playListId)
+    public Track insertNewTrack(int playListId)
     {
-        Track track = new Track(findMaxTrackId() + 1, playListId, "NEW");
+        Track track = new Track(getTracksNum(playListId), playListId, "NEW");
         realm.beginTransaction();
         realm.copyToRealm(track);
         realm.commitTransaction();
         return track;
     }
 
-    public void deleteTrack(int id)
+    public void deleteTrack(int id, int playListId)
     {
 
-        Track track = queryTrackById(id);
+        Track track = queryTrackById(id, playListId);
+        RealmResults<Track> tracks = realm.where(Track.class).equalTo("playListId", playListId).and().greaterThan("id", id).findAll();
         if (track != null)
         {
             realm.beginTransaction();
             track.deleteFromRealm();
+            for (Track t : tracks)
+            {
+                t.setId(t.getId() - 1);
+            }
+
             realm.commitTransaction();
         }
 
@@ -197,7 +198,7 @@ public class PlayListDBHelper
 
     public void swapTrack(int playListId, int fromIndex, int toIndex)
     {
-        RealmResults<Track> tracks = realm.where(Track.class).equalTo("playListId", playListId).findAll();
+        RealmResults<Track> tracks = queryTracksByPlayListIdRaw(playListId);
         if (fromIndex >= tracks.size())
         {
             throw new IndexOutOfBoundsException("fromIndex is out of bound.");
@@ -207,27 +208,25 @@ public class PlayListDBHelper
             throw new IndexOutOfBoundsException("toIndex is out of bound.");
         }
 
-        int temp = tracks.get(fromIndex).getId();
+        realm.beginTransaction();
         if (fromIndex < toIndex)
         {
 
             for (int i = fromIndex; i < toIndex; i++)
             {
-                temp = tracks.get(i + 1).getId();
-                tracks.get(i + 1).setId(tracks.get(i).getId());
+
+                tracks.get(i + 1).setId(i);
             }
         } else
         {
             for (int i = fromIndex; i > toIndex; i--)
             {
-                temp = tracks.get(i - 1).getId();
-                tracks.get(i - 1).setId(tracks.get(i).getId());
+                tracks.get(i - 1).setId(i);
             }
 
         }
-        tracks.get(fromIndex).setId(temp);
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(tracks);
+        tracks.get(fromIndex).setId(toIndex);
+
         realm.commitTransaction();
 
     }
@@ -235,15 +234,6 @@ public class PlayListDBHelper
 
 
 
-/*        if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(adapter.getDataList(), i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(adapter.getDataList(), i, i - 1);
-            }
-        }*/
 
 
     public void close()
@@ -255,11 +245,6 @@ public class PlayListDBHelper
     public enum TrackAttr
     {
         name, time
-    }
-
-    public enum TableType
-    {
-        PLAYLIST, TRACK
     }
 
 

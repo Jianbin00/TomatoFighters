@@ -1,5 +1,6 @@
 package com.tomatofighters.Views;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,14 @@ public class TimerViewAdapter extends RecyclerViewAdapter
     private int maxTrackId = -1;
     private List<Short> hourList;
     private List<Short> minAndSecList;
+    private String color;
 
+
+    public TimerViewAdapter(String color)
+    {
+        super();
+        this.color = color;
+    }
     @Override
     public List<Track> getDataList()
     {
@@ -55,10 +63,10 @@ public class TimerViewAdapter extends RecyclerViewAdapter
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
         Track data = dataList.get(position);
-        ((TimerViewAdapter.MyViewHolder) holder).nameView.setText(data.getName());
+        ((MyViewHolder) holder).nameView.setText(data.getName());
 
-        ((TimerViewAdapter.MyViewHolder) holder).timeView.setText(data.getTime());
-
+        ((MyViewHolder) holder).timeView.setText(data.getTime());
+        ((MyViewHolder) holder).mainView.setBackgroundColor(Color.parseColor(color));
     }
 
     @Override
@@ -70,7 +78,7 @@ public class TimerViewAdapter extends RecyclerViewAdapter
     @Override
     public void removeItem(int position)
     {
-
+        dataList.remove(position);
     }
 
 

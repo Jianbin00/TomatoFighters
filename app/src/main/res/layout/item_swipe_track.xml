@@ -3,11 +3,12 @@
     android:id="@+id/trackItem"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:paddingBottom="3dp">
+    android:layout_height="@dimen/playlist_height"
+    android:paddingBottom="@dimen/playlist_margin_up_down"
+    android:paddingTop="@dimen/playlist_margin_up_down">
 
 
-    <EditText
+    <TextView
         android:id="@+id/trackName"
         android:layout_width="@dimen/todo_editor_text_width"
         android:layout_height="@dimen/todo_editor_text_height"
@@ -15,11 +16,9 @@
         android:layout_alignTop="@+id/trackTime"
         android:layout_marginStart="8dp"
         android:background="@null"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
         android:maxLines="1"/>
 
-    <EditText
+    <TextView
         android:id="@+id/trackTime"
         android:layout_width="@dimen/todo_editor_time_width"
         android:layout_height="@dimen/todo_editor_text_height"
@@ -27,7 +26,6 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="8dp"
         android:background="@null"
-        android:focusable="false"
         android:text="@string/default_time"
         android:textAlignment="center"/>
 

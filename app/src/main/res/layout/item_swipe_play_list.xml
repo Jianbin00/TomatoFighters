@@ -4,8 +4,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
 
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:paddingBottom="1dp">
+    android:layout_height="@dimen/play_button_size"
+    android:layout_marginBottom="@dimen/playlist_margin_up_down"
+    android:layout_marginTop="@dimen/playlist_margin_up_down"
+    android:paddingBottom="@dimen/playlist_margin_up_down"
+    android:paddingTop="@dimen/playlist_margin_up_down">
 
     <TextView
         android:id="@+id/playListName"
@@ -15,17 +18,23 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="106dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="@dimen/left_margin"
         android:background="?android:attr/selectableItemBackground"
-        android:gravity="left|center_vertical"/>
+        android:gravity="left|center_vertical"
+        android:paddingLeft="@dimen/left_padding"
+        android:textColor="@color/white"/>
 
     <TextView
         android:layout_width="@dimen/play_button_size"
         android:layout_height="@dimen/play_button_size"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="14dp"
-        android:text=">"/>
+        android:layout_marginEnd="@dimen/right_margin"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingRight="@dimen/right_padding"
+        android:text=">"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size"/>
 
 
     <!--<Button

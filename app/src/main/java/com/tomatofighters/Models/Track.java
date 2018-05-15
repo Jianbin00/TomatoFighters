@@ -17,12 +17,12 @@ import io.realm.annotations.Index;
 public class Track extends RealmObject implements IPickerViewData
 {
     public boolean isLast;
-    @Index
+
     private int id;
+    @Index
     private int playListId;
     private String name;
     private String time;
-    private int order;
 
 
     public Track()
@@ -90,16 +90,6 @@ public class Track extends RealmObject implements IPickerViewData
     public void setTime(String time)
     {
         this.time = time;
-    }
-
-    public int getOrder()
-    {
-        return order;
-    }
-
-    public void setOrder(int order)
-    {
-        this.order = order;
     }
 
     @Override
