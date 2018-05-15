@@ -95,7 +95,7 @@ public class TimerActivity extends AppCompatActivity
                 {
                     if (!isPlay)
                     {
-                        //sp.play(startSP,1,1,1,0,1);
+                        sp.play(startSP, 1, 1, 1, 0, 1);
                         initCountDownTimer(remainTime);
                         cdTimer.start();
                         playButton.setImageResource(android.R.drawable.ic_media_pause);
@@ -164,7 +164,7 @@ public class TimerActivity extends AppCompatActivity
             @Override
             public void onFinish()
             {
-                //sp.play(bellSP,1,1,1,0,1);
+                sp.play(bellSP, 1, 1, 1, 0, 1);
                 remainTime = 0;
                 if (adapter.getDataList().size() > 0)
                 {
