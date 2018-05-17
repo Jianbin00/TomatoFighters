@@ -17,4 +17,5 @@
     <string name="default_play_list_name">TODO</string>
     <string name="no_timer_msg">No timer</string>
     <string name="back">Back</string>
+    <string name="done">Done</string>
 </resources>

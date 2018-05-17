@@ -29,7 +29,6 @@ public class TrackActivity extends AppCompatActivity
     private Toolbar toolbar;
     private TrackViewAdapter adapter;
     private PlayListDBHelper dbHelper;
-    private String listColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -90,7 +89,6 @@ public class TrackActivity extends AppCompatActivity
             case R.id.action_play:
                 Intent i = new Intent(TrackActivity.this, TimerActivity.class);
                 i.putExtra("playListId", playListId);
-                i.putExtra("color", listColor);
                 startActivity(i);
                 return true;
             case android.R.id.home:
@@ -104,7 +102,6 @@ public class TrackActivity extends AppCompatActivity
 
     private void initDatas() {
         playListId = getIntent().getIntExtra("playlistId", 0);
-        listColor = getIntent().getStringExtra("color");
         dbHelper = new PlayListDBHelper();
         playList = dbHelper.queryPlayListById(playListId);
         if (playList != null)

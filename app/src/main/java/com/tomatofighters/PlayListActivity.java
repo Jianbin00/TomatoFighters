@@ -1,7 +1,6 @@
 package com.tomatofighters;
 
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.tomatofighters.Controllers.ItemTouchHelperCallback;
@@ -39,7 +37,6 @@ public class PlayListActivity extends AppCompatActivity
 
 
     private final static String SHAREDPREFERENCES_TAG = "mypreference";
-    private InputMethodManager inputManager;
     private PlayListViewAdapter adapter;
     private PlayListDBHelper dbHelper;
     private Toolbar toolbar;
@@ -71,7 +68,6 @@ public class PlayListActivity extends AppCompatActivity
             {
                 i = new Intent(PlayListActivity.this, TrackActivity.class);
                 i.putExtra("playlistId", adapter.getDataList().get(position).getId());
-                i.putExtra("color", adapter.getViewHolderColor(position));
                 startActivity(i);
             }
 
@@ -86,7 +82,6 @@ public class PlayListActivity extends AppCompatActivity
             {
 
                 final EditText inputText = new EditText(PlayListActivity.this);
-                inputManager = (InputMethodManager) inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputText.setMaxLines(1);
                 inputText.setSingleLine(true);
                 PlayList playList = adapter.getDataList().get(position);
@@ -103,7 +98,6 @@ public class PlayListActivity extends AppCompatActivity
 
                                 playList.setName(name);
                                 dbHelper.setPlayListName(playList.getId(), name);
-                                inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
                                 dialogInterface.dismiss();
                                 //adapter.notifyDataSetChanged();
                                 adapter.notifyItemChanged(position);
@@ -115,20 +109,17 @@ public class PlayListActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
                             {
-                                inputManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
                                 dialogInterface.dismiss();
                                 //dismissInputMethod(inputManager, inputText);
                             }
                         });
 
 
-                inputText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                inputText.setImeOptions(EditorInfo.IME_ACTION_SEND);
                 inputDialog.show();
                 inputText.setText(playList.getName());
                 inputText.selectAll();
-                //TODO:When click the view, the content of EditText is selected but no keyboard come out.
-                //popUpInputMethod(inputManager, inputText);
-                inputManager.showSoftInput(inputText, InputMethodManager.SHOW_FORCED);
+                Util.showSoftKeyboard(inputText);
 
 
             }

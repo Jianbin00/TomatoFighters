@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import com.tomatofighters.DB.PlayListDBHelper;
 import com.tomatofighters.Models.Track;
 import com.tomatofighters.R;
 import com.tomatofighters.TimeConverter;
+import com.tomatofighters.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +89,6 @@ public class TrackViewAdapter extends RecyclerViewAdapter
                                 dbHelper.setTrackName(data.getId(), data.getPlayListId(), newName);
                                 dbHelper.close();
                                 dialogInterface.dismiss();
-                                //notifyDataSetChanged();
                                 notifyItemChanged(position);
                             }
                         })
@@ -98,8 +99,11 @@ public class TrackViewAdapter extends RecyclerViewAdapter
                             {
                                 dialogInterface.dismiss();
                             }
-                        });
+                        })
+                ;
+                inputText.setImeOptions(EditorInfo.IME_ACTION_SEND);
                 inputDialog.show();
+                Util.showSoftKeyboard(inputText);
             }
         });
         ((TrackViewAdapter.MyViewHolder) holder).timeView.setText(data.getTime());
@@ -111,7 +115,7 @@ public class TrackViewAdapter extends RecyclerViewAdapter
             public void onClick(View v)
             {
                 int[] timeDigits = TimeConverter.timeStringToInts(data.getTime());
-                //TODO:dialog need to adjust.
+
                 tpview = new OptionsPickerView.Builder(v.getContext(), new OptionsPickerView.OnOptionsSelectListener()
                 {
                     @Override
@@ -129,7 +133,6 @@ public class TrackViewAdapter extends RecyclerViewAdapter
                             setLast(dataList);
                         }
                         dbHelper.close();
-                        //notifyDataSetChanged();
                         notifyItemChanged(position);
                     }
                 })
@@ -168,9 +171,6 @@ public class TrackViewAdapter extends RecyclerViewAdapter
                         .setBgColor(Color.WHITE)
                         .setTitleBgColor(Color.DKGRAY)
                         .setTitleColor(Color.LTGRAY)
-                        //.setCancelColor(Color.YELLOW)
-                        //.setSubmitColor(Color.YELLOW)
-                        //.setTextColorCenter(Color.BLACK)
                         .setCyclic(true, true, true)
                         .setOutSideCancelable(true)
                         .isDialog(true)
@@ -197,14 +197,13 @@ public class TrackViewAdapter extends RecyclerViewAdapter
     }
 
 
-    private List<Track> setLast(List<Track> tracks)
+    private void setLast(List<Track> tracks)
     {
         int dataNum = tracks.size();
         if (dataNum > 0)
         {
             tracks.get(dataNum - 1).isLast = true;
         }
-        return tracks;
     }
 
     public void setLast()
@@ -230,9 +229,8 @@ public class TrackViewAdapter extends RecyclerViewAdapter
     private static class MyViewHolder extends RecyclerView.ViewHolder
     {
 
-        TextView nameView;
-        TextView timeView;
-        RelativeLayout mainView;
+        TextView nameView, timeView;
+        RelativeLayout mainView, allView;
 
         MyViewHolder(View itemView)
         {
@@ -242,7 +240,9 @@ public class TrackViewAdapter extends RecyclerViewAdapter
 
             timeView = itemView.findViewById(R.id.trackTime);
 
-            mainView = itemView.findViewById(R.id.trackItem);
+            mainView = itemView.findViewById(R.id.trackMain);
+            allView = itemView.findViewById(R.id.trackItem);
+
         }
 
 

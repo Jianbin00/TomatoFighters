@@ -19,8 +19,6 @@ public class PlayListViewAdapter extends RecyclerViewAdapter
 {
 
     private List<PlayList> dataList = new ArrayList<>();
-    private String[] colors = {"#D09AE7", "#FD9927", "#6ACA6B", "#6BCDFD", "#FD9BCB"};
-    private String color;
 
 
     @Override
@@ -45,8 +43,7 @@ public class PlayListViewAdapter extends RecyclerViewAdapter
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
         ((MyViewHolder) holder).tv.setText(dataList.get(position).getName());
-        color = colors[position % colors.length];
-        ((MyViewHolder) holder).mainView.setBackgroundColor(Color.parseColor(color));
+        ((MyViewHolder) holder).mainView.setBackgroundColor(Color.parseColor(dataList.get(position).getBackgroundColor()));
     }
 
     @Override
@@ -63,25 +60,21 @@ public class PlayListViewAdapter extends RecyclerViewAdapter
         dbHelper.close();
     }
 
-    public String getViewHolderColor(int position)
-    {
-
-        return color;
-    }
 
 
     private static class MyViewHolder extends RecyclerView.ViewHolder
     {
 
         TextView tv;
-        RelativeLayout mainView;
-        //String color;
+        RelativeLayout mainView, allView;
+
 
         MyViewHolder(View itemView)
         {
             super(itemView);
             tv = itemView.findViewById(R.id.playListName);
-            mainView = itemView.findViewById(R.id.playListItem);
+            mainView = itemView.findViewById(R.id.playListMain);
+            allView = itemView.findViewById(R.id.playListItem);
         }
 
 

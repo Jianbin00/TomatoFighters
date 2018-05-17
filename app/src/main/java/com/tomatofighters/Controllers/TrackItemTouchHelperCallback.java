@@ -10,8 +10,7 @@ import java.util.Collections;
 
 /**
  * Jianbin Li
- * Assignment
- * ${FILE_NAME}.
+ *
  */
 
 public class TrackItemTouchHelperCallback extends ItemTouchHelperCallback
@@ -54,6 +53,7 @@ public class TrackItemTouchHelperCallback extends ItemTouchHelperCallback
 
         return true;
     }
+
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction)

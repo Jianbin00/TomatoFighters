@@ -16,9 +16,9 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbarSize"
+            android:fitsSystemWindows="true"
             app:subtitleTextColor="@color/textColorPrimary"
-            app:titleTextColor="@color/textColorPrimary"
-            />
+            app:titleTextColor="@color/textColorPrimary"/>
 
     </android.support.design.widget.AppBarLayout>
 

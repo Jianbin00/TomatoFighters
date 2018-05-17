@@ -20,6 +20,9 @@ public class PlayList extends RealmObject
     private int id;
     private String name;
 
+
+    private String backgroundColor;
+
     private RealmList<Track> tracks;
 
     public PlayList()
@@ -38,10 +41,11 @@ public class PlayList extends RealmObject
         this.tracks = tracks;
     }
 
-    public PlayList(int id, String name, RealmList<Track> tracks)
+    public PlayList(int id, String name, String backgroundColor, RealmList<Track> tracks)
     {
         this.id = id;
         this.name = name;
+        this.backgroundColor = backgroundColor;
     }
 
     public int getId()
@@ -62,6 +66,16 @@ public class PlayList extends RealmObject
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getBackgroundColor()
+    {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(String backgroundColor)
+    {
+        this.backgroundColor = backgroundColor;
     }
 
     public RealmList<Track> getTracks()

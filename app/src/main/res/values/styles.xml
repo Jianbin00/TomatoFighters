@@ -12,6 +12,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">@font/san_francisco_bold</item>
         <item name="android:listDivider">@drawable/playlist_divider</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
 

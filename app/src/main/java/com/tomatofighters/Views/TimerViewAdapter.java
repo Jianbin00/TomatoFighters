@@ -1,6 +1,9 @@
 package com.tomatofighters.Views;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bigkoo.pickerview.OptionsPickerView;
-import com.tomatofighters.DB.PlayListDBHelper;
 import com.tomatofighters.Models.Track;
 import com.tomatofighters.R;
 
@@ -18,27 +19,20 @@ import java.util.List;
 
 /**
  * Jianbin Li
- * Assignment
- * ${FILE_NAME}.
+ *
  */
 
 public class TimerViewAdapter extends RecyclerViewAdapter
 {
-    private static final short MAX_HOUR = 9;
-    private final static String DEFAULT_TIME = "00:00:00";
-    private final static String SELECT_TIME = "Select the time";
     private List<Track> dataList = new ArrayList<>();
-    private PlayListDBHelper dbHelper;
-    private OptionsPickerView tpview;
-    private int maxTrackId = -1;
-    private List<Short> hourList;
-    private List<Short> minAndSecList;
     private String color;
+    private Context context;
 
 
-    public TimerViewAdapter(String color)
+    public TimerViewAdapter(Context context, String color)
     {
         super();
+        this.context = context;
         this.color = color;
     }
     @Override
@@ -66,7 +60,9 @@ public class TimerViewAdapter extends RecyclerViewAdapter
         ((MyViewHolder) holder).nameView.setText(data.getName());
 
         ((MyViewHolder) holder).timeView.setText(data.getTime());
-        ((MyViewHolder) holder).mainView.setBackgroundColor(Color.parseColor(color));
+
+
+        ((MyViewHolder) holder).mainView.setBackground(createDrawableSelector(context, color));
     }
 
     @Override
@@ -78,20 +74,21 @@ public class TimerViewAdapter extends RecyclerViewAdapter
     @Override
     public void removeItem(int position)
     {
-        dataList.remove(position);
+
     }
 
-
-    private List<Track> setLast(List<Track> tracks)
+    private StateListDrawable createDrawableSelector(Context context, String color)
     {
-        int dataNum = tracks.size();
-        if (dataNum > 0)
-        {
-            tracks.get(dataNum - 1).isLast = true;
-        }
-        return tracks;
-    }
+        GradientDrawable activated = (GradientDrawable) context.getResources().getDrawable(R.drawable.highlight_background);
+        activated.setColor(Color.parseColor(color));
+        GradientDrawable unactivated = (GradientDrawable) context.getResources().getDrawable(R.drawable.normal_background);
+        unactivated.setColor(Color.parseColor(color));
+        StateListDrawable stateList = new StateListDrawable();
+        stateList.addState(new int[]{android.R.attr.state_activated}, activated);
+        stateList.addState(new int[]{}, unactivated);
 
+        return stateList;
+    }
 
     private static class MyViewHolder extends RecyclerView.ViewHolder
     {

@@ -52,8 +52,6 @@ public abstract class OnItemClickListener extends GestureDetector.SimpleOnGestur
     @Override
     public boolean onDoubleTap(MotionEvent e)
     {
-       /* int action = e.getAction();
-        if (action == MotionEvent.ACTION_UP) {*/
         View childView = recyclerView.findChildViewUnder(e.getX(), e.getY());
         if (childView != null)
         {
@@ -61,7 +59,6 @@ public abstract class OnItemClickListener extends GestureDetector.SimpleOnGestur
             onItemDoubleClick(viewHolder, recyclerView.getChildLayoutPosition(childView));
             return true;
         }
-        //}
         return false;
     }
 

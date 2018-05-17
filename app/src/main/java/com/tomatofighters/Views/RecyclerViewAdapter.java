@@ -7,8 +7,7 @@ import java.util.List;
 
 /**
  * Jianbin Li
- * Assignment
- * ${FILE_NAME}.
+ *
  */
 
 public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>

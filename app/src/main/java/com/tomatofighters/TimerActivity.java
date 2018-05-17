@@ -28,8 +28,6 @@ import static com.tomatofighters.TimeConverter.millisToString;
 import static com.tomatofighters.TimeConverter.timeStringToLong;
 
 
-//import java.io.FileOutputStream;
-//import java.io.IOException;
 
 public class TimerActivity extends AppCompatActivity
 {
@@ -42,15 +40,14 @@ public class TimerActivity extends AppCompatActivity
     private ImageButton playButton;
     private CountDownTimer cdTimer;
     private long remainTime;
-    private int hour, min, sec;
-    private String timeShow;
-    private boolean isPlay, isLast;
+    private boolean isPlay;
     private int playListId;
     private PlayListDBHelper dbHelper;
     private TimerViewAdapter adapter;
     private RecyclerView mRecyclerView;
     private SoundPool sp;
-    private int startSP, bellSP;//ID for sounds
+    private int bellSP;//ID for sounds
+    private int playingIndex = 0;
 
 
     @Override
@@ -61,6 +58,7 @@ public class TimerActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
+
         if (getSupportActionBar() != null)
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -68,10 +66,11 @@ public class TimerActivity extends AppCompatActivity
         remainTimeTV = findViewById(R.id.remain_time);
 
         playListId = getIntent().getIntExtra("playListId", 0);
-        adapter = new TimerViewAdapter(getIntent().getStringExtra("color"));
+
 
         initDatas();
-        //initSound();
+
+        initSound();
         if (!adapter.getDataList().isEmpty())
         {
             remainTimeTV.setText(adapter.getDataList().get(0).getTime());
@@ -79,11 +78,6 @@ public class TimerActivity extends AppCompatActivity
         mRecyclerView = findViewById(R.id.tracks);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        //mRecyclerView.addItemDecoration(new MyItemDecoration(this, MyItemDecoration.VERTICAL_LIST));
-
-
-        /*ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelperCallback(adapter));
-        helper.attachToRecyclerView(mRecyclerView);*/
         mRecyclerView.setAdapter(adapter);
         playButton = findViewById(R.id.play_button);
         if (adapter.getItemCount() > 0)
@@ -95,18 +89,17 @@ public class TimerActivity extends AppCompatActivity
                 {
                     if (!isPlay)
                     {
-                        sp.play(startSP, 1, 1, 1, 0, 1);
                         initCountDownTimer(remainTime);
                         cdTimer.start();
                         playButton.setImageResource(android.R.drawable.ic_media_pause);
-                        highlight(true);
+                        highlight(playingIndex, true);
 
 
                     } else
                     {
                         cdTimer.cancel();
                         playButton.setImageResource(android.R.drawable.ic_media_play);
-                        downplay();
+                        highlight(playingIndex, false);
                     }
                     isPlay = !isPlay;
                 }
@@ -145,7 +138,7 @@ public class TimerActivity extends AppCompatActivity
         spb.setMaxStreams(1);
         spb.setAudioAttributes(new AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_ALARM).build());
         sp = spb.build();
-        startSP = sp.load(this, R.raw.starting_pistol_stephan_schutze, 1);
+
         bellSP = sp.load(this, R.raw.service_bell_daniel_simion, 1);
     }
 
@@ -165,36 +158,34 @@ public class TimerActivity extends AppCompatActivity
             public void onFinish()
             {
                 sp.play(bellSP, 1, 1, 1, 0, 1);
-                remainTime = 0;
-                if (adapter.getDataList().size() > 0)
+                //remainTime = 0;
+                if (adapter.getDataList().get(playingIndex).isLast)
                 {
-                    if (adapter.getDataList().get(0).isLast)
-                    {
 
-                        remainTimeTV.setText("Done");
-                        playButton.setImageResource(android.R.drawable.ic_media_play);
-                        isPlay = !isPlay;
-                    } else
-                    {
-                        highlight(false);
-                        //downplay();
-                        //Track movedItem = adapter.getDataList().get(0);
-                        adapter.getDataList().remove(0);
-                        //adapter.getDataList().add(movedItem);
-                        remainTimeTV.setText(adapter.getDataList().get(0).getTime());
-                        remainTime = timeStringToLong(adapter.getDataList().get(0).getTime());
-                        initCountDownTimer(remainTime);
-                        cdTimer.start();
-                        highlight(true);
-                    }
+                    remainTimeTV.setText(getResources().getString(R.string.done));
+
+                    playButton.setImageResource(android.R.drawable.ic_media_play);
+                    isPlay = !isPlay;
+                    highlight(playingIndex, false);
+                    playingIndex = 0;
+                } else
+                {
+                    highlight(playingIndex, false);
+                    playingIndex++;
+                    highlight(playingIndex, true);
+
+                    remainTimeTV.setText(adapter.getDataList().get(playingIndex).getTime());
+                    remainTime = timeStringToLong(adapter.getDataList().get(playingIndex).getTime());
+                    initCountDownTimer(remainTime);
+                    cdTimer.start();
+
+
                 }
-
             }
 
 
         };
     }
-
 
 
     @Override
@@ -237,16 +228,7 @@ public class TimerActivity extends AppCompatActivity
 
         {
             setTitle(playList.getName());
-            adapter.setDataList(dbHelper.queryTracksByPlayListId(playListId));
-            int dataNum = adapter.getItemCount();
-            for (int i = dataNum - 1; i >= 0; i--)
-            {
-                if (adapter.getDataList().get(i).getTime().equals("00:00:00"))
-                {
-                    adapter.getDataList().remove(i);
-                }
-            }
-            setLast(adapter.getDataList());
+            initList();
         } else
         {
             Toast.makeText(this, "Can't find the ID.", Toast.LENGTH_SHORT).show();
@@ -254,9 +236,29 @@ public class TimerActivity extends AppCompatActivity
         if (adapter.getDataList().isEmpty())
         {
             remainTimeTV.setText(R.string.no_timer_msg);
-        }
+        }/*else
+        {
+            dataNum=adapter.getItemCount();
+        }*/
+
 
     }
+
+    private void initList()
+    {
+        adapter = new TimerViewAdapter(this, playList.getBackgroundColor());
+        adapter.setDataList(dbHelper.queryTracksByPlayListId(playListId));
+        int dataNum = adapter.getItemCount();
+        for (int i = dataNum - 1; i >= 0; i--)
+        {
+            if (adapter.getDataList().get(i).getTime().equals("00:00:00"))
+            {
+                adapter.getDataList().remove(i);
+            }
+        }
+        setLast(adapter.getDataList());
+    }
+
 
     private void setLast(List<Track> tasks)
     {
@@ -267,25 +269,13 @@ public class TimerActivity extends AppCompatActivity
         }
     }
 
-    private void highlight(boolean activated)
+    private void highlight(int index, boolean activated)
     {
-       /* mRecyclerView.getChildAt(0).findViewById(R.id.trackItem).setBackground(
-                getResources().getDrawable(R.drawable.highlight_background)
-        );
-        ((TextView)mRecyclerView.getChildAt(0).findViewById(R.id.trackName)).
-                setTextColor(getResources().getColor(R.color.textColorPrimary));
-        ((TextView)mRecyclerView.getChildAt(0).findViewById(R.id.trackTime)).
-                setTextColor(getResources().getColor(R.color.textColorPrimary));*/
-        mRecyclerView.getChildAt(0).findViewById(R.id.trackItem).setActivated(activated);
+        View v = mRecyclerView.getChildAt(index);
+        v.findViewById(R.id.trackItem).setActivated(activated);
+        v.findViewById(R.id.trackName).setActivated(activated);
+        v.findViewById(R.id.trackTime).setActivated(activated);
     }
 
-    private void downplay()
-    {
-        mRecyclerView.getChildAt(0).findViewById(R.id.trackItem).setBackground(null);
-        ((TextView) mRecyclerView.getChildAt(0).findViewById(R.id.trackName)).
-                setTextColor(getResources().getColor(R.color.white));
-        ((TextView) mRecyclerView.getChildAt(0).findViewById(R.id.trackTime)).
-                setTextColor(getResources().getColor(R.color.white));
-    }
 
 }

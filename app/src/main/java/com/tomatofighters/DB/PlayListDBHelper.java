@@ -14,7 +14,7 @@ import io.realm.RealmResults;
  * Jianbin Li
  * PlayListDBHelper.java
  * It contains functions that use Realm to read and save data.
- * TODO:when track id and playList id reach max int, new record will be not available.
+ *
  */
 
 public class PlayListDBHelper
@@ -22,7 +22,7 @@ public class PlayListDBHelper
     private final String DEFAULT_PLAY_LIST_NAME = "TODO";
     private final String PRE_TRACK_NAME = "TASK";
     private final int DEFAULT_NUM_OF_TRACK_IN_PLAYLIST = 5;
-
+    private String[] colors = {"#D09AE7", "#FD9927", "#6ACA6B", "#6BCDFD", "#FD9BCB"};
 
     private Realm realm;
 
@@ -34,19 +34,13 @@ public class PlayListDBHelper
 
     public List<PlayList> queryAllPlayLists()
     {
-
         RealmResults<PlayList> playLists = realm.where(PlayList.class).findAll();
-/*        RealmList<PlayList> pList=new RealmList<>();
-        pList.addAll(playLists);
-        return pList;*/
         return realm.copyFromRealm(playLists);
-        //return playLists;
     }
 
 
     public PlayList queryPlayListById(int playListId)
     {
-
         return realm.where(PlayList.class).equalTo("id", playListId).findFirst();
     }
 
@@ -70,7 +64,7 @@ public class PlayListDBHelper
             Track track = new Track(i, playListId, PRE_TRACK_NAME + i);
             tracks.add(track);
         }
-        PlayList playList = new PlayList(playListId, DEFAULT_PLAY_LIST_NAME, tracks);
+        PlayList playList = new PlayList(playListId, DEFAULT_PLAY_LIST_NAME, colors[getPlayListsNum() % colors.length], tracks);
         // Copy the object to Realm. Any further changes must happen on realm
         realm.beginTransaction();
         realm.copyToRealm(playList);
@@ -81,7 +75,6 @@ public class PlayListDBHelper
 
     public void setPlayListName(int playListId, String name)
     {
-
 
         PlayList playList = queryPlayListById(playListId);
         if (playList != null)
@@ -161,6 +154,13 @@ public class PlayListDBHelper
         }
 
     }
+
+    public int getPlayListsNum()
+    {
+        return (int) realm.where(PlayList.class).count();
+
+    }
+
 
     public int getTracksNum(int playListId)
     {
