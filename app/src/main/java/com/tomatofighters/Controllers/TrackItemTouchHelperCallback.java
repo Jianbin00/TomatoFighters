@@ -16,6 +16,7 @@ import java.util.Collections;
 public class TrackItemTouchHelperCallback extends ItemTouchHelperCallback
 {
     private final TrackViewAdapter adapter;
+    PlayListDBHelper dbHelper;
     private int playListId;
 
     public TrackItemTouchHelperCallback(TrackViewAdapter adapter, int playListId)
@@ -48,10 +49,19 @@ public class TrackItemTouchHelperCallback extends ItemTouchHelperCallback
 
         adapter.notifyItemMoved(fromPosition, toPosition);
         adapter.setLast();
-        PlayListDBHelper dbHelper = new PlayListDBHelper();
+        dbHelper = new PlayListDBHelper();
         dbHelper.swapTrack(playListId, fromPosition, toPosition);
 
         return true;
+    }
+
+    @Override
+    public void onMoved(final RecyclerView recyclerView,
+                        final RecyclerView.ViewHolder viewHolder, int fromPos, final RecyclerView.ViewHolder target, int toPos, int x,
+                        int y)
+    {
+        super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
+        dbHelper.commitTransaction();
     }
 
 

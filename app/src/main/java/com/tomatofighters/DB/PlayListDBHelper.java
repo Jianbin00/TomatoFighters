@@ -227,11 +227,19 @@ public class PlayListDBHelper
         }
         tracks.get(fromIndex).setId(toIndex);
 
-        realm.commitTransaction();
+        //realm.commitTransaction();
 
     }
 
+    public void beginTransaction()
+    {
+        realm.beginTransaction();
+    }
 
+    public void commitTransaction()
+    {
+        realm.commitTransaction();
+    }
 
 
 
